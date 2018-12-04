@@ -1,0 +1,4 @@
+[submodule "3dlite"]
+	path = 3dlite
+	url = https://github.com/Siriuscoder/3dlite.git
+    branch = cmakeref
