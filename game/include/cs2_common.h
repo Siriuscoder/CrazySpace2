@@ -17,6 +17,12 @@
 *******************************************************************************/
 #pragma once
 
+#ifdef	__cplusplus
+#   define CS2_EXTERN  extern "C" 
+#else
+#   define CS2_EXTERN 
+#endif
+
 #ifdef PLATFORM_Windows
 #   ifdef WIN_CS2_DLL
 // When making the DLL, export tagged symbols, so they appear
@@ -34,4 +40,4 @@
 #endif
 
 
-#define CS2_CEXPORT CS2_EXPORT 
+#define CS2_CEXPORT CS2_EXTERN CS2_EXPORT 
