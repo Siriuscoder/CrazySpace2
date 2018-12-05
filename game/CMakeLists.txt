@@ -16,14 +16,29 @@
 #	along with CrazySpace2.  If not, see <http://www.gnu.org/licenses/>.
 
 cmake_minimum_required(VERSION 2.8.9)
-project(game)
+project(cs2)
 
 unset(SOURCES_LIST)
 unset(HEADERS_LIST)
 
 source_files("src")
 headers_files("include")
-add_library(game SHARED ${SOURCES_LIST} ${HEADERS_LIST})
+add_library(cs2 SHARED ${SOURCES_LIST} ${HEADERS_LIST})
 
-target_link_libraries(game
-lite3dpp)
+if(MSVC)
+target_compile_definitions(cs2 PRIVATE
+"$<BUILD_INTERFACE:WIN_CS2_DLL>")
+endif()
+
+target_compile_definitions(cs2 PRIVATE
+"$<BUILD_INTERFACE:${PLATFORM_TYPE}>")
+
+target_include_directories(cs2 PRIVATE 
+"$<BUILD_INTERFACE:${CMAKE_CRAZYSPACE2_TOP_DIR}/3dlite/lite3d/include>"
+"$<BUILD_INTERFACE:${CMAKE_CRAZYSPACE2_TOP_DIR}/3dlite/lite3dpp/include>"
+"$<BUILD_INTERFACE:${CMAKE_CRAZYSPACE2_TOP_DIR}/3dlite/lite3dpp_font/include>")
+
+target_link_libraries(cs2
+lite3d
+lite3dpp
+lite3dpp_font)

@@ -25,5 +25,10 @@ source_files("src")
 headers_files("include")
 add_executable(loader ${SOURCES_LIST} ${HEADERS_LIST})
 
+target_compile_definitions(loader PRIVATE
+"$<BUILD_INTERFACE:${PLATFORM_TYPE}>")
+target_include_directories(loader PRIVATE 
+"$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>")
+
 target_link_libraries(loader
-game)
+cs2)

@@ -19,7 +19,10 @@ cmake_minimum_required(VERSION 2.8.9)
 project(CrazySpace2)
 
 set(BUILD_ENGINE_ONLY ON CACHE BOOL "Do not build samples, tests and other staff" FORCE)
+set(CMAKE_CRAZYSPACE2_TOP_DIR ${PROJECT_SOURCE_DIR})
 
-add_subdirectory("${PROJECT_SOURCE_DIR}/3dlite/")
-add_subdirectory("${PROJECT_SOURCE_DIR}/game/")
-add_subdirectory("${PROJECT_SOURCE_DIR}/loader/pc/")
+include_directories("${CMAKE_CRAZYSPACE2_TOP_DIR}/game/include")
+
+add_subdirectory("${CMAKE_CRAZYSPACE2_TOP_DIR}/3dlite/")
+add_subdirectory("${CMAKE_CRAZYSPACE2_TOP_DIR}/game/")
+add_subdirectory("${CMAKE_CRAZYSPACE2_TOP_DIR}/loader/pc/")
