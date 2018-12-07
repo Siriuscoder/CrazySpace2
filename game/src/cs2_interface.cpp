@@ -13,16 +13,53 @@
 *	GNU General Public License for more details.
 *
 *	You should have received a copy of the GNU General Public License
-*	along with Lite3D.  If not, see <http://www.gnu.org/licenses/>.
+*	along with CrazySpace2.  If not, see <http://www.gnu.org/licenses/>.
 *******************************************************************************/
+#include <iostream>
+
 #include <cs2_interface.h>
+#include <cs2_game.h>
+
+std::unique_ptr<CS2::CS2Game> gameInstance;
 
 int cs2_init()
 {
+    try
+    {
+        gameInstance.reset(new CS2::CS2Game());
+        gameInstance->initGame();
+    }
+    catch (std::exception &ex)
+    {
+        std::cerr << "cs2_init error: " << ex.what() << std::endl;
+        return -1;
+    }
+
     return 0;
 }
 
 int cs2_start(int count, char *args[])
 {
+    if (!gameInstance)
+    {
+        std::cerr << "Not inited yet, call cs2_init first" << std::endl;
+        return -1;
+    }
+
+    try
+    {
+        std::vector<std::string> commandLine;
+        for (int i = 0; i < count; ++i)
+            commandLine.push_back(args[i]);
+
+        gameInstance->configure(commandLine);
+        gameInstance->startGame();
+    }
+    catch (std::exception &ex)
+    {
+        std::cerr << "cs2_start error: " << ex.what() << std::endl;
+        return -1;
+    }
+
     return 0;
 }

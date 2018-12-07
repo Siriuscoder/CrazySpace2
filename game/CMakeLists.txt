@@ -34,6 +34,7 @@ target_compile_definitions(cs2 PRIVATE
 "$<BUILD_INTERFACE:${PLATFORM_TYPE}>")
 
 target_include_directories(cs2 PRIVATE 
+"$<BUILD_INTERFACE:${SDL2_INCLUDE_DIR}>"
 "$<BUILD_INTERFACE:${CMAKE_CRAZYSPACE2_TOP_DIR}/3dlite/lite3d/include>"
 "$<BUILD_INTERFACE:${CMAKE_CRAZYSPACE2_TOP_DIR}/3dlite/lite3dpp/include>"
 "$<BUILD_INTERFACE:${CMAKE_CRAZYSPACE2_TOP_DIR}/3dlite/lite3dpp_font/include>")

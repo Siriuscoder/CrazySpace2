@@ -15,12 +15,27 @@
 *	You should have received a copy of the GNU General Public License
 *	along with CrazySpace2.  If not, see <http://www.gnu.org/licenses/>.
 *******************************************************************************/
-#include <cs2_interface.h>
+#pragma once 
 
-int main(int count, char *args[])
+#include <lite3dpp/lite3dpp_main.h>
+#include <lite3dpp_font/lite3dpp_font_texture.h>
+
+#include <cs2_common.h>
+
+namespace CS2
 {
-    if (int err = cs2_init())
-        return err;
+    class CS2Game : protected lite3dpp::LifecycleObserver
+    {
+    public:
 
-    return cs2_start(count, args);
+        CS2Game();
+
+        void initGame();
+        void configure(std::vector<std::string> &args);
+        void startGame();
+
+    private:
+
+        std::unique_ptr<lite3dpp::Main> mEngine;
+    };
 }
