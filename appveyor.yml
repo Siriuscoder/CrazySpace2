@@ -1,0 +1,38 @@
+version: '0.1.{build}'
+
+image: 
+  - Visual Studio 2015
+  - Ubuntu
+  
+configuration:
+  - Release
+  
+init:
+  - sh: mkdir -p /home/appveyor/builds/cs2_linux
+  - cmd: mkdir C:\builds\cs2_win
+  
+install:
+  - sh: cd /home/appveyor/projects/crazyspace2
+  - sh: git submodule update --init --recursive --remote
+  - cmd: cd C:\projects\crazyspace2
+  - cmd: git submodule update --init --recursive --remote
+  - sh: sudo apt-get update
+  - sh: sudo apt-get install -y libdevil-dev libassimp-dev libsdl2-dev libfreetype6-dev libbullet-dev
+  
+before_build:
+  - sh: cd /home/appveyor/builds/cs2_linux
+  - sh: cmake -DCMAKE_BUILD_TYPE=Release /home/appveyor/projects/crazyspace2
+  - cmd: cd C:\builds\cs2_win
+  - cmd: cmake -G "Visual Studio 14 2015 Win64" C:\projects\crazyspace2
+
+build:
+  project: C:\builds\cs2_win\CrazySpace2.sln
+  
+for:
+-
+  matrix:
+    only:
+      - image: Ubuntu
+
+  build_script:
+  - sh: make all
