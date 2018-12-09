@@ -27,7 +27,7 @@ namespace CS2
     void CS2Game::initGame()
     {
         mEngine.reset(new lite3dpp::Main());
-        mInput.reset(new CS2Input(*mEngine));
+        mMainMenu.reset(new CS2MainMenu(*mEngine));
         mBackground.reset(new CS2Background(*mEngine));
     }
 
@@ -95,7 +95,7 @@ namespace CS2
     void CS2Game::finishGame()
     {
         mBackground.reset();
-        mInput.reset();
+        mMainMenu.reset();
         mEngine.reset();
     }
 }

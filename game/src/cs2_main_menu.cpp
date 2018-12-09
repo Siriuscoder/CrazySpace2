@@ -17,15 +17,28 @@
 *******************************************************************************/
 #include <sstream>
 
-#include <cs2_input.h>
+#include <cs2_main_menu.h>
 
 namespace CS2
 {
-    CS2Input::CS2Input(lite3dpp::Main &engine) : 
+    CS2MainMenu::CS2MainMenu(lite3dpp::Main &engine) : 
         CS2EngineListener(engine)
     {}
 
-    void CS2Input::processEvent(SDL_Event *e)
+    void CS2MainMenu::animate(int32_t firedPerRound, uint64_t deltaMs)
+    {
+        // animate main menu here
+    }
+
+    void CS2MainMenu::engineLoad()
+    {
+        getEngine().window()->setBackgroundColor(KM_VEC4_ZERO);
+        // load main menu assets here
+        mMainMenuScene = getEngine().getResourceManager()->queryResource<lite3dpp::Scene>("main_menu_scene",
+            "cs2:scenes/main_menu.json");
+    }
+
+    void CS2MainMenu::processEvent(SDL_Event *e)
     {
         if (e->type == SDL_KEYDOWN)
         {

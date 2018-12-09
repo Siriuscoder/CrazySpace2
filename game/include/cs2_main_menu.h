@@ -22,14 +22,21 @@
 
 namespace CS2
 {
-    class CS2Input : public CS2EngineListener
+    class CS2MainMenu : public CS2EngineListener
     {
     public:
 
-        CS2Input(lite3dpp::Main &engine);
+        CS2MainMenu(lite3dpp::Main &engine);
+
+        void animate(int32_t firedPerRound, uint64_t deltaMs) override;
+        void engineLoad() override;
 
     protected:
         
         void processEvent(SDL_Event *e) override;
+
+    private:
+
+        lite3dpp::Scene *mMainMenuScene;
     };
 }

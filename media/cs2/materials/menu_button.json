@@ -1,0 +1,41 @@
+{
+    "Uniforms":
+    [
+        { "Name": "projectionMatrix" },
+        { "Name": "modelMatrix" },
+        { "Name": "viewMatrix" },
+        {
+            "Name":"text_color",
+            "Type":"v4",
+            "Value":[1, 1, 1, 1]
+        },
+
+        {
+            "Name": "text_diffuse",
+            "Type": "sampler",
+            "TextureName": "text_button.texture"
+        }
+    ],
+    
+    "Passes": 
+    [
+        {
+            "Pass": 1,
+            "Program": 
+            {
+                "Name": "text_button",
+                "Path": "cs2:shaders/json/text_button.json"
+            },
+            "Blending":true,
+            //  
+            // Traditional blend algorithm:
+            // Orgb = Sa * Srgb + (1 - Sa) * Drgb
+            // Oa = 1 * Sa + 0 * Da = Sa
+            //
+            // Traditional blend algorithm with alpha blend: (TraditionalWithAlpha)
+            // Orgb = Sa * Srgb + (1 - Sa) * Drgb
+            // Oa = 1 * Sa + (1 - Sa) * Da
+            "Blendingmode":"traditional"
+        }
+    ]
+}
