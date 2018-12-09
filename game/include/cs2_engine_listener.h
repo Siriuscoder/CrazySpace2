@@ -15,17 +15,39 @@
 *	You should have received a copy of the GNU General Public License
 *	along with CrazySpace2.  If not, see <http://www.gnu.org/licenses/>.
 *******************************************************************************/
-#include <cs2_interface.h>
+#pragma once 
 
-int main(int count, char *args[])
+#include <lite3dpp/lite3dpp_main.h>
+
+#include <cs2_common.h>
+
+namespace CS2
 {
-    int err = cs2_init();
+    class CS2EngineListener : protected lite3dpp::LifecycleObserver
+    {
+    public:
+
+        CS2EngineListener(lite3dpp::Main &engine);
+        ~CS2EngineListener();
         
-    if (err)
-        return err;
+        virtual void engineLoad();
+        virtual void engineShut();
+        virtual void animate(int32_t firedPerRound, uint64_t deltaMs);
+        virtual void regularTimerTick(lite3d_timer *timerid);
 
-    err = cs2_start(count, args);
-    cs2_finalize();
+        lite3dpp::Main &getEngine()
+        { return mEngine; }
+        const lite3dpp::Main &getEngine() const
+        { return mEngine; }
 
-    return err;
+    protected:
+
+        void init() override final;
+        void shut() override final;
+        void timerTick(lite3d_timer *timerid) override final;
+
+    private:
+
+        lite3dpp::Main &mEngine;
+    };
 }

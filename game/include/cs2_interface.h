@@ -21,3 +21,4 @@
 
 CS2_CEXPORT int cs2_init();
 CS2_CEXPORT int cs2_start(int count, char *args[]);
+CS2_CEXPORT int cs2_finalize();

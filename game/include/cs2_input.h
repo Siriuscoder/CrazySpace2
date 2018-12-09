@@ -15,17 +15,21 @@
 *	You should have received a copy of the GNU General Public License
 *	along with CrazySpace2.  If not, see <http://www.gnu.org/licenses/>.
 *******************************************************************************/
-#include <cs2_interface.h>
+#pragma once 
 
-int main(int count, char *args[])
+#include <cs2_common.h>
+#include <cs2_engine_listener.h>
+
+namespace CS2
 {
-    int err = cs2_init();
+    class CS2Input : public CS2EngineListener
+    {
+    public:
+
+        CS2Input(lite3dpp::Main &engine);
+
+    protected:
         
-    if (err)
-        return err;
-
-    err = cs2_start(count, args);
-    cs2_finalize();
-
-    return err;
+        void processEvent(SDL_Event *e) override;
+    };
 }

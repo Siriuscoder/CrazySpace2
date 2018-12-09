@@ -15,6 +15,8 @@
 *	You should have received a copy of the GNU General Public License
 *	along with CrazySpace2.  If not, see <http://www.gnu.org/licenses/>.
 *******************************************************************************/
+#include <sstream>
+
 #include <cs2_game.h>
 
 namespace CS2
@@ -25,17 +27,75 @@ namespace CS2
     void CS2Game::initGame()
     {
         mEngine.reset(new lite3dpp::Main());
-        mEngine->addObserver(this);
+        mInput.reset(new CS2Input(*mEngine));
+        mBackground.reset(new CS2Background(*mEngine));
     }
 
-    void CS2Game::configure(std::vector<std::string> &args)
+    void CS2Game::configure(const std::vector<std::string> &args)
     {
-        std::string json;
+        int logLevel = 1;
+        bool fullscreen = false;
+        bool logtofile = false;
+        for (const std::string &s : args)
+        {
+            if (s == "-v")
+                logLevel = 2;
+            else if (s == "-vv")
+                logLevel = 3;
+            else if (s == "-f")
+                fullscreen = true;
+            else if (s == "-l")
+                logtofile = true;
+            else if (s == "-h")
+            {
+                LITE3D_THROW("help:" << std::endl
+                    << "\t-v:  verbose output" << std::endl
+                    << "\t-vv: debug output" << std::endl
+                    << "\t-l:  save output to log file" << std::endl
+                    << "\t-f:  fullscreen" << std::endl
+                    << "\t-h:  print help" << std::endl);
+            }
+        }
+
+        lite3dpp::ConfigurationWriter reslocation;
+        reslocation.set(L"Name", L"cs2")
+            .set(L"Path", L"cs2/")
+            .set(L"FileCacheMaxSize", 0xA00000);
+
+        lite3dpp::stl<lite3dpp::ConfigurationWriter>::vector reslocationArr;
+        reslocationArr.push_back(reslocation);
+
+        lite3dpp::String json = lite3dpp::ConfigurationWriter().set(L"LogLevel", logLevel)
+            .set(L"logMuteStd", logLevel == 1)
+            .set(L"LogFile", logtofile)
+            .set(L"LogFlushAlways", false)
+            .set(L"FixedUpdatesInterval", 30)
+            .set(L"Minidump", true)
+            .set(L"VideoSettings", lite3dpp::ConfigurationWriter()
+                .set(L"Width", fullscreen ? 0 : 400)
+                .set(L"Height", fullscreen ? 0 : 800)
+                .set(L"Caption", L"CrazySpace2")
+                .set(L"ColorBits", 24)
+                .set(L"Fullscreen", fullscreen)
+                .set(L"FSAA", 1)
+                .set(L"VSync", true))
+            .set(L"TextureSettings", lite3dpp::ConfigurationWriter()
+                .set(L"Anisotropy", 8)
+                .set(L"Compression", true))
+            .set(L"ResourceLocations", reslocationArr).write();
+
         mEngine->initFromConfigString(json.c_str());
     }
 
     void CS2Game::startGame()
     {
         mEngine->run();
+    }
+
+    void CS2Game::finishGame()
+    {
+        mBackground.reset();
+        mInput.reset();
+        mEngine.reset();
     }
 }

@@ -15,17 +15,20 @@
 *	You should have received a copy of the GNU General Public License
 *	along with CrazySpace2.  If not, see <http://www.gnu.org/licenses/>.
 *******************************************************************************/
-#include <cs2_interface.h>
+#pragma once 
 
-int main(int count, char *args[])
+#include <cs2_common.h>
+#include <cs2_engine_listener.h>
+
+namespace CS2
 {
-    int err = cs2_init();
-        
-    if (err)
-        return err;
+    class CS2Background : public CS2EngineListener
+    {
+    public:
 
-    err = cs2_start(count, args);
-    cs2_finalize();
+        CS2Background(lite3dpp::Main &engine);
 
-    return err;
+        void animate(int32_t firedPerRound, uint64_t deltaMs) override;
+        void engineLoad() override;
+    };
 }

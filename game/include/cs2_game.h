@@ -17,25 +17,27 @@
 *******************************************************************************/
 #pragma once 
 
-#include <lite3dpp/lite3dpp_main.h>
-#include <lite3dpp_font/lite3dpp_font_texture.h>
-
 #include <cs2_common.h>
+#include <cs2_background.h>
+#include <cs2_input.h>
 
 namespace CS2
 {
-    class CS2Game : protected lite3dpp::LifecycleObserver
+    class CS2Game
     {
     public:
 
         CS2Game();
 
         void initGame();
-        void configure(std::vector<std::string> &args);
+        void configure(const std::vector<std::string> &args);
         void startGame();
+        void finishGame();
 
     private:
 
         std::unique_ptr<lite3dpp::Main> mEngine;
+        std::unique_ptr<CS2Input> mInput;
+        std::unique_ptr<CS2Background> mBackground;
     };
 }

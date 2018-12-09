@@ -15,17 +15,48 @@
 *	You should have received a copy of the GNU General Public License
 *	along with CrazySpace2.  If not, see <http://www.gnu.org/licenses/>.
 *******************************************************************************/
-#include <cs2_interface.h>
+#include <cs2_engine_listener.h>
 
-int main(int count, char *args[])
+namespace CS2
 {
-    int err = cs2_init();
-        
-    if (err)
-        return err;
+    CS2EngineListener::CS2EngineListener(lite3dpp::Main &engine) :
+        mEngine(engine)
+    {
+        mEngine.addObserver(this);
+    }
 
-    err = cs2_start(count, args);
-    cs2_finalize();
+    CS2EngineListener::~CS2EngineListener()
+    {
+        mEngine.removeObserver(this);
+    }
 
-    return err;
+    void CS2EngineListener::engineLoad()
+    {}
+
+    void CS2EngineListener::engineShut()
+    {}
+
+    void CS2EngineListener::animate(int32_t firedPerRound, uint64_t deltaMs)
+    {}
+
+    void CS2EngineListener::regularTimerTick(lite3d_timer *timerid)
+    {}
+
+    void CS2EngineListener::init()
+    {
+        engineLoad();
+    }
+
+    void CS2EngineListener::shut()
+    {
+        engineShut();
+    }
+
+    void CS2EngineListener::timerTick(lite3d_timer *timerid)
+    {
+        if (timerid == mEngine.getFixedUpdateTimer())
+        {
+            animate(timerid->firedPerRound, timerid->deltaMs);
+        }
+    }
 }

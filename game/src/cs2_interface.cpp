@@ -31,7 +31,7 @@ int cs2_init()
     }
     catch (std::exception &ex)
     {
-        std::cerr << "cs2_init error: " << ex.what() << std::endl;
+        std::cerr << ex.what() << std::endl;
         return -1;
     }
 
@@ -57,9 +57,16 @@ int cs2_start(int count, char *args[])
     }
     catch (std::exception &ex)
     {
-        std::cerr << "cs2_start error: " << ex.what() << std::endl;
+        std::cerr << ex.what() << std::endl;
         return -1;
     }
 
+    return 0;
+}
+
+int cs2_finalize()
+{
+    gameInstance->finishGame();
+    gameInstance.reset();
     return 0;
 }
