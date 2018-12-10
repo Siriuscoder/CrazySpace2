@@ -72,8 +72,8 @@ namespace CS2
             .set(L"FixedUpdatesInterval", 30)
             .set(L"Minidump", true)
             .set(L"VideoSettings", lite3dpp::ConfigurationWriter()
-                .set(L"Width", fullscreen ? 0 : 400)
-                .set(L"Height", fullscreen ? 0 : 800)
+                .set(L"Width", fullscreen ? 0 : 1024)
+                .set(L"Height", fullscreen ? 0 : 768)
                 .set(L"Caption", L"CrazySpace2")
                 .set(L"ColorBits", 24)
                 .set(L"Fullscreen", fullscreen)
@@ -87,7 +87,7 @@ namespace CS2
         mEngine->initFromConfigString(json.c_str());
     }
 
-    void CS2Game::calculateGameResolution(int &width, int &height) const
+    void CS2Game::calculateGameAreaMetrics(kmVec2 &resolution, kmVec2 &origin) const
     {
         assert(mEngine->window());
         // Get real windows size
@@ -96,21 +96,25 @@ namespace CS2
 
         if (rwidth > rheight)
         {
-            width = rheight / 2;
-            height = rheight;
+            resolution.x = rheight / wAspect;
+            resolution.y = rheight;
         }
         else
         {
-            if (rwidth * 2 > rheight)
+            if (rwidth * wAspect > rheight)
             {
-
+                resolution.x = rheight / wAspect;
+                resolution.y = rheight;
             }
             else
             {
-                width = rwidth;
-                height = rwidth * 2;
+                resolution.x = rwidth;
+                resolution.y = rwidth * wAspect;
             }
         }
+
+        origin.x = (rwidth + resolution.x) / 2.0f;
+        origin.y = 0.0f;
     }
 
     void CS2Game::startGame()

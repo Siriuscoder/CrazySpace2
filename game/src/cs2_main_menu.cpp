@@ -38,6 +38,27 @@ namespace CS2
         // load main menu assets here
         mMainMenuScene = getEngine().getResourceManager()->queryResource<lite3dpp::Scene>("main_menu_scene",
             "cs2:scenes/main_menu.json");
+
+        createMenu();
+    }
+
+    void CS2MainMenu::createMenu()
+    {
+        kmVec2 resolution, origin;
+        mGame.calculateGameAreaMetrics(resolution, origin);
+
+        lite3dpp::ConfigurationWriter panelJson;
+        panelJson.set(L"Model", L"Plane")
+            .set(L"PlainSize", resolution);
+
+        lite3dpp::ConfigurationWriter buttonJson;
+        buttonJson.set(L"Model", L"Plane")
+            .set(L"PlainSize", resolution);
+
+        // Preload menu and button mesh
+        getEngine().getResourceManager()->queryResourceFromJson<lite3dpp::Mesh>("menu.mesh", panelJson.write());
+        getEngine().getResourceManager()->queryResourceFromJson<lite3dpp::Mesh>("menu_button.mesh", buttonJson.write());
+
     }
 
     void CS2MainMenu::processEvent(SDL_Event *e)

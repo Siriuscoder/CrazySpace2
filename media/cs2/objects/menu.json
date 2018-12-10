@@ -1,0 +1,27 @@
+{
+    "Root":
+    {
+        "Name": "menu.root",
+        "Nodes": [
+            {
+                "Name": "menu.node",
+                "Mesh": 
+                {
+                    "Name": "menu.mesh",
+                    "MaterialMapping": 
+                    [
+                        {
+                            "MaterialIndex": 0,
+                            "Material":
+                            {
+                                "Name": "menu.material",
+                                "Material": "cs2:materials/menu.json"
+                            }
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+}
+

@@ -19,6 +19,7 @@
 
 #include <cs2_common.h>
 #include <cs2_engine_listener.h>
+#include <cs2_widgets.h>
 
 namespace CS2
 {
@@ -33,6 +34,7 @@ namespace CS2
 
     protected:
         
+        void createMenu();
         void processEvent(SDL_Event *e) override;
 
     private:

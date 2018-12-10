@@ -17,36 +17,45 @@
 *******************************************************************************/
 #pragma once 
 
+#include <lite3dpp/lite3dpp_main.h>
 #include <cs2_common.h>
-#include <cs2_background.h>
-#include <cs2_main_menu.h>
 
 namespace CS2
 {
-    class CS2Game
+    class CS2Widget : public lite3dpp::Noncopiable
     {
     public:
 
-        const float wAspect = 2.0f;
+        CS2Widget(lite3dpp::Scene &scene, const kmVec2 &origin);
 
-        CS2Game();
+    protected:
 
-        void initGame();
-        void configure(const std::vector<std::string> &args);
-        void startGame();
-        void finishGame();
+        kmVec2 mOrigin;
+        lite3dpp::Scene &mScene;
+    };
 
-        lite3dpp::Main &getEngine()
-        { return *mEngine; }
-        const lite3dpp::Main &getEngine() const 
-        { return *mEngine; }
+    class CS2Panel : public CS2Widget
+    {
+    public:
 
-        void calculateGameAreaMetrics(kmVec2 &resolution, kmVec2 &origin) const;
+        CS2Panel(lite3dpp::Scene &scene, const kmVec2 &origin,
+            const kmVec2 &size);
 
-    private:
+    protected:
 
-        std::unique_ptr<lite3dpp::Main> mEngine;
-        std::unique_ptr<CS2MainMenu> mMainMenu;
-        std::unique_ptr<CS2Background> mBackground;
+        kmVec2 mSize;
+    };
+
+    class CS2Button : public CS2Widget
+    {
+    public:
+
+        CS2Button(lite3dpp::Scene &scene, const kmVec2 &origin,
+            const kmVec2 &size, const std::string &text);
+
+    protected:
+
+        kmVec2 mSize;
+        std::string mText;
     };
 }

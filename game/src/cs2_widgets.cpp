@@ -15,38 +15,26 @@
 *	You should have received a copy of the GNU General Public License
 *	along with CrazySpace2.  If not, see <http://www.gnu.org/licenses/>.
 *******************************************************************************/
-#pragma once 
+#include <sstream>
 
-#include <cs2_common.h>
-#include <cs2_background.h>
-#include <cs2_main_menu.h>
+#include <cs2_game.h>
+#include <cs2_widgets.h>
 
 namespace CS2
 {
-    class CS2Game
-    {
-    public:
+    CS2Widget::CS2Widget(lite3dpp::Scene &scene, const kmVec2 &origin) :
+        mScene(scene),
+        mOrigin(origin)
+    {}
 
-        const float wAspect = 2.0f;
+    CS2Panel::CS2Panel(lite3dpp::Scene &scene, const kmVec2 &origin, const kmVec2 &size) : 
+        CS2Widget(scene, origin),
+        mSize(size)
+    {}
 
-        CS2Game();
-
-        void initGame();
-        void configure(const std::vector<std::string> &args);
-        void startGame();
-        void finishGame();
-
-        lite3dpp::Main &getEngine()
-        { return *mEngine; }
-        const lite3dpp::Main &getEngine() const 
-        { return *mEngine; }
-
-        void calculateGameAreaMetrics(kmVec2 &resolution, kmVec2 &origin) const;
-
-    private:
-
-        std::unique_ptr<lite3dpp::Main> mEngine;
-        std::unique_ptr<CS2MainMenu> mMainMenu;
-        std::unique_ptr<CS2Background> mBackground;
-    };
+    CS2Button::CS2Button(lite3dpp::Scene &scene, const kmVec2 &origin, const kmVec2 &size, const std::string &text) : 
+        CS2Widget(scene, origin),
+        mSize(size),
+        mText(text)
+    {}
 }
