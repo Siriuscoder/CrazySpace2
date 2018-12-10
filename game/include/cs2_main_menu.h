@@ -22,11 +22,11 @@
 
 namespace CS2
 {
-    class CS2MainMenu : public CS2EngineListener
+    class CS2MainMenu : public CS2EngineListener, public lite3dpp::Noncopiable
     {
     public:
 
-        CS2MainMenu(lite3dpp::Main &engine);
+        CS2MainMenu(CS2Game &game);
 
         void animate(int32_t firedPerRound, uint64_t deltaMs) override;
         void engineLoad() override;
@@ -37,6 +37,7 @@ namespace CS2
 
     private:
 
+        CS2Game &mGame;
         lite3dpp::Scene *mMainMenuScene;
     };
 }

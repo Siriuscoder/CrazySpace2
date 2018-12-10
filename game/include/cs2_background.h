@@ -22,13 +22,17 @@
 
 namespace CS2
 {
-    class CS2Background : public CS2EngineListener
+    class CS2Background : public CS2EngineListener, public lite3dpp::Noncopiable
     {
     public:
 
-        CS2Background(lite3dpp::Main &engine);
+        CS2Background(CS2Game &game);
 
         void animate(int32_t firedPerRound, uint64_t deltaMs) override;
         void engineLoad() override;
+
+    private:
+
+        CS2Game &mGame;
     };
 }

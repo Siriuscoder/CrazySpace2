@@ -41,3 +41,8 @@
 
 
 #define CS2_CEXPORT CS2_EXTERN CS2_EXPORT 
+
+namespace CS2
+{
+    class CS2Game;
+}

@@ -27,8 +27,8 @@ namespace CS2
     void CS2Game::initGame()
     {
         mEngine.reset(new lite3dpp::Main());
-        mMainMenu.reset(new CS2MainMenu(*mEngine));
-        mBackground.reset(new CS2Background(*mEngine));
+        mMainMenu.reset(new CS2MainMenu(*this));
+        mBackground.reset(new CS2Background(*this));
     }
 
     void CS2Game::configure(const std::vector<std::string> &args)
@@ -85,6 +85,32 @@ namespace CS2
             .set(L"ResourceLocations", reslocationArr).write();
 
         mEngine->initFromConfigString(json.c_str());
+    }
+
+    void CS2Game::calculateGameResolution(int &width, int &height) const
+    {
+        assert(mEngine->window());
+        // Get real windows size
+        int rwidth = mEngine->window()->width();
+        int rheight = mEngine->window()->height();
+
+        if (rwidth > rheight)
+        {
+            width = rheight / 2;
+            height = rheight;
+        }
+        else
+        {
+            if (rwidth * 2 > rheight)
+            {
+
+            }
+            else
+            {
+                width = rwidth;
+                height = rwidth * 2;
+            }
+        }
     }
 
     void CS2Game::startGame()

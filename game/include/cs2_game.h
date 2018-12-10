@@ -34,6 +34,13 @@ namespace CS2
         void startGame();
         void finishGame();
 
+        lite3dpp::Main &getEngine()
+        { return *mEngine; }
+        const lite3dpp::Main &getEngine() const 
+        { return *mEngine; }
+
+        void calculateGameResolution(int &w, int &h) const;
+
     private:
 
         std::unique_ptr<lite3dpp::Main> mEngine;

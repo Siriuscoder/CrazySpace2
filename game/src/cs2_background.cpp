@@ -17,12 +17,14 @@
 *******************************************************************************/
 #include <sstream>
 
+#include <cs2_game.h>
 #include <cs2_background.h>
 
 namespace CS2
 {
-    CS2Background::CS2Background(lite3dpp::Main &engine) : 
-        CS2EngineListener(engine)
+    CS2Background::CS2Background(CS2Game &game) :
+        CS2EngineListener(game.getEngine()),
+        mGame(game)
     {}
 
     void CS2Background::engineLoad()

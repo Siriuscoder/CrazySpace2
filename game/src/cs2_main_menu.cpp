@@ -17,12 +17,14 @@
 *******************************************************************************/
 #include <sstream>
 
+#include <cs2_game.h>
 #include <cs2_main_menu.h>
 
 namespace CS2
 {
-    CS2MainMenu::CS2MainMenu(lite3dpp::Main &engine) : 
-        CS2EngineListener(engine)
+    CS2MainMenu::CS2MainMenu(CS2Game &game) :
+        CS2EngineListener(game.getEngine()),
+        mGame(game)
     {}
 
     void CS2MainMenu::animate(int32_t firedPerRound, uint64_t deltaMs)
