@@ -1,0 +1,11 @@
+#version 330
+
+uniform sampler2D diffuse;
+
+in vec2 uv;
+out vec4 fragcolor;
+
+void main()
+{
+    fragcolor = texture2D(diffuse, uv);
+}

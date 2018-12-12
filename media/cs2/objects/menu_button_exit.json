@@ -1,0 +1,27 @@
+{
+    "Root":
+    {
+        "Name": "menu_button_exit.root",
+        "Nodes": [
+            {
+                "Name": "menu_button_exit.node",
+                "Mesh": 
+                {
+                    "Name": "menu_button_exit.mesh",
+                    "MaterialMapping": 
+                    [
+                        {
+                            "MaterialIndex": 0,
+                            "Material":
+                            {
+                                "Name": "menu_button_exit.material",
+                                "Material": "cs2:materials/menu_button_exit.json"
+                            }
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+}
+

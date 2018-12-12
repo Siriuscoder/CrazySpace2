@@ -1,0 +1,35 @@
+{
+    "Uniforms":
+    [
+        { "Name": "projectionMatrix" },
+        { "Name": "modelMatrix" },
+        { "Name": "viewMatrix" },
+        {
+            "Name":"color",
+            "Type":"v4",
+            "Value":[0, 0, 0, 1]
+        }
+    ],
+    
+    "Passes": 
+    [
+        {
+            "Pass": 1,
+            "Program": 
+            {
+                "Name": "solid_shape.program",
+                "Path": "cs2:shaders/json/solid_shape.json"
+            },
+            "Blending": true,
+            //  
+            // Traditional blend algorithm:
+            // Orgb = Sa * Srgb + (1 - Sa) * Drgb
+            // Oa = 1 * Sa + 0 * Da = Sa
+            //
+            // Traditional blend algorithm with alpha blend: (TraditionalWithAlpha)
+            // Orgb = Sa * Srgb + (1 - Sa) * Drgb
+            // Oa = 1 * Sa + (1 - Sa) * Da
+            "Blendingmode": "traditional"
+        }
+    ]
+}

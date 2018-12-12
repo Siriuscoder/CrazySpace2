@@ -1,21 +1,21 @@
 {
     "Root":
     {
-        "Name": "menu.root",
+        "Name": "menu_button_new_game.root",
         "Nodes": [
             {
-                "Name": "menu.node",
+                "Name": "menu_button_new_game.node",
                 "Mesh": 
                 {
-                    "Name": "menu.mesh",
+                    "Name": "menu_button_new_game.mesh",
                     "MaterialMapping": 
                     [
                         {
                             "MaterialIndex": 0,
                             "Material":
                             {
-                                "Name": "menu.material",
-                                "Material": "cs2:materials/menu.json"
+                                "Name": "menu_button_new_game.material",
+                                "Material": "cs2:materials/menu_button_new_game.json"
                             }
                         }
                     ]

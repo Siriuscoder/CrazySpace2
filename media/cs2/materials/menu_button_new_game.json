@@ -3,7 +3,12 @@
     [
         { "Name": "projectionMatrix" },
         { "Name": "modelMatrix" },
-        { "Name": "viewMatrix" }
+        { "Name": "viewMatrix" },
+        {
+            "Name": "diffuse",
+            "Type": "sampler",
+            "TextureName": "menu_button_new_game.texture"
+        }
     ],
     
     "Passes": 
@@ -12,8 +17,8 @@
             "Pass": 1,
             "Program": 
             {
-                "Name": "menu.program",
-                "Path": "cs2:shaders/json/menu.json"
+                "Name": "textured_shape.program",
+                "Path": "cs2:shaders/json/textured_shape.json"
             },
             "Blending":true,
             //  

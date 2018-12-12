@@ -5,15 +5,9 @@
         { "Name": "modelMatrix" },
         { "Name": "viewMatrix" },
         {
-            "Name":"text_color",
-            "Type":"v4",
-            "Value":[1, 1, 1, 1]
-        },
-
-        {
-            "Name": "text_diffuse",
+            "Name": "diffuse",
             "Type": "sampler",
-            "TextureName": "text_button.texture"
+            "TextureName": "menu_button_exit.texture"
         }
     ],
     
@@ -23,8 +17,8 @@
             "Pass": 1,
             "Program": 
             {
-                "Name": "text_button.program",
-                "Path": "cs2:shaders/json/text_button.json"
+                "Name": "textured_shape.program",
+                "Path": "cs2:shaders/json/textured_shape.json"
             },
             "Blending":true,
             //  

@@ -27,7 +27,9 @@ namespace CS2
     {
     public:
 
-        const float wAspect = 2.0f;
+        const float WindowAspect = 2.0f;
+        static const std::string assetPackageName();
+        static const std::string assetObjectsPath();
 
         CS2Game();
 
@@ -41,7 +43,7 @@ namespace CS2
         const lite3dpp::Main &getEngine() const 
         { return *mEngine; }
 
-        void calculateGameAreaMetrics(kmVec2 &resolution, kmVec2 &origin) const;
+        void calculateGameAreaMetrics(kmVec2 &origin, kmVec2 &resolution) const;
 
     private:
 

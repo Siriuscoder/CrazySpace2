@@ -1,0 +1,35 @@
+{
+    "Uniforms":
+    [
+        { "Name": "projectionMatrix" },
+        { "Name": "modelMatrix" },
+        { "Name": "viewMatrix" },
+        {
+            "Name": "diffuse",
+            "Type": "sampler",
+            "TextureName": "menu_button_resume.texture"
+        }
+    ],
+    
+    "Passes": 
+    [
+        {
+            "Pass": 1,
+            "Program": 
+            {
+                "Name": "textured_shape.program",
+                "Path": "cs2:shaders/json/textured_shape.json"
+            },
+            "Blending":true,
+            //  
+            // Traditional blend algorithm:
+            // Orgb = Sa * Srgb + (1 - Sa) * Drgb
+            // Oa = 1 * Sa + 0 * Da = Sa
+            //
+            // Traditional blend algorithm with alpha blend: (TraditionalWithAlpha)
+            // Orgb = Sa * Srgb + (1 - Sa) * Drgb
+            // Oa = 1 * Sa + (1 - Sa) * Da
+            "Blendingmode":"traditional"
+        }
+    ]
+}

@@ -53,15 +53,18 @@ namespace CS2
 
         virtual void processEvent(SDL_Event *sysevent);
 
-        inline void onWidgetMouseClick(const MouseClickHandler &handler)
+        inline void setWidgetMouseClick(const MouseClickHandler &handler)
         { mMouseClickHandler = handler; }
-        inline void onWidgetMouseMove(const MouseMoveHandler &handler)
+        inline void setWidgetMouseMoveHandler(const MouseMoveHandler &handler)
         { mMouseMoveHandler = handler; }
 
     protected:
 
         void addChild(CS2Widget *widget);
         void removeChild(CS2Widget *widget);
+
+        virtual void onWidgetMouseClick(const kmVec2 &mousePos);
+        virtual void onWidgetMouseMove(const kmVec2 &mousePos);
 
         std::string mName;
         lite3dpp::Scene &mScene;
@@ -79,7 +82,7 @@ namespace CS2
     public:
 
         CS2Panel(const std::string &name, lite3dpp::Scene &scene, const kmVec2 &origin,
-            const kmVec2 &size, CS2Widget *parent = nullptr);
+            const kmVec2 &size, const kmVec4 &color, CS2Widget *parent = nullptr);
 
         ~CS2Panel();
     };
@@ -93,11 +96,13 @@ namespace CS2
 
         CS2Button(const std::string &name, lite3dpp::Scene &scene, const kmVec2 &origin,
             const kmVec2 &size, const std::string &text, const std::string &font,
-            const kmVec4 &background, int fontSize, CS2Widget *parent = nullptr);
+            const kmVec4 &color, int fontSize, CS2Widget *parent = nullptr);
 
         ~CS2Button();
 
     protected:
+
+        void onWidgetMouseMove(const kmVec2 &mousePos) override;
 
         std::string mText;
         lite3dpp::lite3dpp_font::FontTexture *mFontTexture;

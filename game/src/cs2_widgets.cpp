@@ -29,7 +29,7 @@ namespace CS2
         mWidgetObject(nullptr)
     {
         lite3dpp::ConfigurationWriter meshParams;
-        meshParams.set(L"Model", L"Plane")
+        meshParams.set(L"Model", L"Plain")
             .set(L"PlainSize", size);
 
         // Preload widget mesh simple plane
@@ -55,7 +55,7 @@ namespace CS2
     void CS2Widget::addChild(CS2Widget *widget)
     {
         auto it = mChilds.find(widget->getName());
-        if (it == mChilds.end())
+        if (it != mChilds.end())
             LITE3D_THROW("Dublicate widget " << widget->getName());
 
         mChilds[widget->getName()] = widget;
@@ -72,28 +72,21 @@ namespace CS2
 
     void CS2Widget::processEvent(SDL_Event *sysevent)
     {
-        if (sysevent->type = SDL_MOUSEMOTION)
+        if (sysevent->type == SDL_MOUSEMOTION)
         {
             SDL_Event relevent = *sysevent;
             relevent.motion.x = relevent.motion.x - mOrigin.x;
             relevent.motion.y = relevent.motion.y + mOrigin.y;
 
-            if (relevent.motion.x >= 0 && relevent.motion.x < mSize.x &&
-                relevent.motion.y >= 0 && relevent.motion.y < mSize.y)
-            {
-                kmVec2 mouseRelativePos = {
-                    static_cast<float>(relevent.motion.x),
-                    static_cast<float>(relevent.motion.y)
-                };
-
-                if (mMouseMoveHandler)
-                    mMouseMoveHandler(this, mouseRelativePos);
-
-                for (auto &w : mChilds)
-                    w.second->processEvent(&relevent);
-            }
+            kmVec2 mouseRelativePos = {
+                static_cast<float>(relevent.motion.x),
+                static_cast<float>(relevent.motion.y)
+            };
+            onWidgetMouseMove(mouseRelativePos);
+            for (auto &w : mChilds)
+                w.second->processEvent(&relevent);
         }
-        else if (sysevent->type = SDL_MOUSEBUTTONUP)
+        else if (sysevent->type == SDL_MOUSEBUTTONUP)
         {
             if (sysevent->button.clicks == 1)
             {
@@ -109,13 +102,28 @@ namespace CS2
                         static_cast<float>(relevent.button.y)
                     };
 
-                    if (mMouseClickHandler)
-                        mMouseClickHandler(this, mouseRelativePos);
+                    onWidgetMouseClick(mouseRelativePos);
 
                     for (auto &w : mChilds)
                         w.second->processEvent(&relevent);
                 }
             }
+        }
+    }
+
+    void CS2Widget::onWidgetMouseClick(const kmVec2 &mousePos)
+    {
+        if (mMouseClickHandler)
+            mMouseClickHandler(this, mousePos);
+    }
+
+    void CS2Widget::onWidgetMouseMove(const kmVec2 &mousePos)
+    {
+        if (mousePos.x >= 0 && mousePos.x < mSize.x &&
+            mousePos.y >= 0 && mousePos.y < mSize.y)
+        {
+            if (mMouseMoveHandler)
+                mMouseMoveHandler(this, mousePos);
         }
     }
 
@@ -139,12 +147,18 @@ namespace CS2
     }
 
     CS2Panel::CS2Panel(const std::string &name, lite3dpp::Scene &scene, const kmVec2 &origin, 
-        const kmVec2 &size, CS2Widget *parent) :
+        const kmVec2 &size, const kmVec4 &color, CS2Widget *parent) :
         CS2Widget(name, scene, origin, size, parent)
     {
-        std::string objPath = "cs2:objects/";
-        mWidgetObject = scene.addObject(name, objPath + name + ".json", parent ? parent->getObject() : nullptr);
+        mWidgetObject = scene.addObject(name, CS2Game::assetObjectsPath() + name + ".json", 
+            parent ? parent->getObject() : nullptr);
+
         mWidgetObject->getRoot()->setPosition(mOrigin);
+
+        // set panel color
+        lite3dpp::Material *meterial = scene.getMain().getResourceManager()->
+            queryResource<lite3dpp::Material>(name + ".material");
+        meterial->setFloatv4Parameter(1, "color", color);
     }
 
     CS2Panel::~CS2Panel()
@@ -156,7 +170,7 @@ namespace CS2
     }
 
     CS2Button::CS2Button(const std::string &name, lite3dpp::Scene &scene, const kmVec2 &origin, const kmVec2 &size, 
-        const std::string &text, const std::string &font, const kmVec4 &background, int fontSize, CS2Widget *parent) :
+        const std::string &text, const std::string &font, const kmVec4 &color, int fontSize, CS2Widget *parent) :
         CS2Widget(name, scene, origin, size, parent),
         mText(text),
         mFontTexture(nullptr)
@@ -171,17 +185,20 @@ namespace CS2
             .set(L"Height", size.y)
             .set(L"Font", font)
             .set(L"FontSize", fontSize)
-            .set(L"BlankColor", background);
+            .set(L"BlankColor", color);
 
         // load button texture, font texture
         mFontTexture = scene.getMain().getResourceManager()->queryResourceFromJson<lite3dpp::lite3dpp_font::FontTexture>(
             name + ".texture", fontTextureParams.write());
 
         kmVec2 textPos = { 5, 5 };
+        mFontTexture->clean();
         mFontTexture->drawText(mText, textPos, PassiveColor);
+        mFontTexture->uploadChanges();
 
-        std::string objPath = "cs2:objects/";
-        mWidgetObject = scene.addObject(name, objPath + name + ".json", parent ? parent->getObject() : nullptr);
+        mWidgetObject = scene.addObject(name, CS2Game::assetObjectsPath() + name + ".json", 
+            parent ? parent->getObject() : nullptr);
+
         mWidgetObject->getRoot()->setPosition(mOrigin);
     }
 
@@ -192,5 +209,33 @@ namespace CS2
         mScene.getMain().getResourceManager()->releaseResource(mName + ".texture");
         mScene.getMain().getResourceManager()->releaseResource(mName + ".material");
         mScene.removeObject(mWidgetObject->getName());
+    }
+
+    void CS2Button::onWidgetMouseMove(const kmVec2 &mousePos)
+    {
+        CS2Widget::onWidgetMouseMove(mousePos);
+
+        static bool active = false;
+        bool current = mousePos.x >= 0 && mousePos.x < mSize.x && mousePos.y >= 0 && mousePos.y < mSize.y;
+        
+        if (active != current)
+        {
+            if (current)
+            {
+                kmVec2 textPos = { 5, 5 };
+                mFontTexture->clean();
+                mFontTexture->drawText(mText, textPos, ActiveColor);
+                mFontTexture->uploadChanges();
+            }
+            else
+            {
+                kmVec2 textPos = { 5, 5 };
+                mFontTexture->clean();
+                mFontTexture->drawText(mText, textPos, PassiveColor);
+                mFontTexture->uploadChanges();
+            }
+
+            active = current;
+        }
     }
 }

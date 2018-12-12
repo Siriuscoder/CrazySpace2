@@ -1,21 +1,21 @@
 {
     "Root":
     {
-        "Name": "menu_button.root",
+        "Name": "menu_panel.root",
         "Nodes": [
             {
-                "Name": "menu_button.node",
+                "Name": "menu_panel.node",
                 "Mesh": 
                 {
-                    "Name": "menu_button.mesh",
+                    "Name": "menu_panel.mesh",
                     "MaterialMapping": 
                     [
                         {
                             "MaterialIndex": 0,
                             "Material":
                             {
-                                "Name": "menu_button.material",
-                                "Material": "cs2:materials/menu_button.json"
+                                "Name": "menu_panel.material",
+                                "Material": "cs2:materials/menu_panel.json"
                             }
                         }
                     ]

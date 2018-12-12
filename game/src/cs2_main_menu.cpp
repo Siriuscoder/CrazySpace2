@@ -35,31 +35,42 @@ namespace CS2
 
     void CS2MainMenu::engineLoad()
     {
-        getEngine().window()->setBackgroundColor(KM_VEC4_ZERO);
+        // getEngine().window()->setBackgroundColor(KM_VEC4_ZERO);
         // load main menu assets here
         mMainMenuScene = getEngine().getResourceManager()->queryResource<lite3dpp::Scene>("main_menu_scene",
             "cs2:scenes/main_menu.json");
 
+        // setup camera
+        lite3dpp::Camera *menuCamera = getEngine().getCamera("main_menu_camera");
+        menuCamera->setupOrtho(-5, 20, 0, getEngine().window()->width(),
+            -getEngine().window()->height(), 0);
+    
+        kmVec3 cameraPos = { 0, 0, 20 };
+        menuCamera->setPosition(cameraPos);
+        menuCamera->lookAt(KM_VEC3_ZERO);
+
         createMenu();
+        hide();
         show(false);
     }
 
     void CS2MainMenu::createMenu()
     {
         kmVec2 resolution, origin, buttonSize;
-        kmVec4 background = { 0.2, 0.2, 0.2, 0.4 };
-        mGame.calculateGameAreaMetrics(resolution, origin);
+        kmVec4 panelColor = { 0.2, 0.2, 0.2, 0.4 };
+        kmVec4 buttonColor = { 0.9, 0.2, 0.2, 0.4 };
+        mGame.calculateGameAreaMetrics(origin, resolution);
 
         buttonSize.x = resolution.x * ButtonRelatedXSize;
         buttonSize.y = ButtonHeight;
 
-        mMenuPanel.reset(new CS2Panel("menu_panel", *mMainMenuScene, origin, resolution));
+        mMenuPanel.reset(new CS2Panel("menu_panel", *mMainMenuScene, origin, resolution, panelColor));
         mMenuButtonNewGame.reset(new CS2Button("menu_button_new_game", *mMainMenuScene, origin, buttonSize, "New Game",
-            "cs2:fonts/arial.ttf", background, 16, mMenuPanel.get()));
+            "cs2:fonts/arial.ttf", buttonColor, 16, mMenuPanel.get()));
         mMenuButtonResume.reset(new CS2Button("menu_button_resume", *mMainMenuScene, origin, buttonSize, "Resume",
-            "cs2:fonts/arial.ttf", background, 14, mMenuPanel.get()));
+            "cs2:fonts/arial.ttf", buttonColor, 14, mMenuPanel.get()));
         mMenuButtonExit.reset(new CS2Button("menu_button_exit", *mMainMenuScene, origin, buttonSize, "Exit",
-            "cs2:fonts/arial.ttf", background, 14, mMenuPanel.get()));
+            "cs2:fonts/arial.ttf", buttonColor, 14, mMenuPanel.get()));
     }
 
     void CS2MainMenu::engineStops()
@@ -114,7 +125,7 @@ namespace CS2
 
             mMenuButtonExit->show();
             buttonOrigin.y -= ButtonHeight + 4;
-            mMenuButtonResume->setOrigin(buttonOrigin);
+            mMenuButtonExit->setOrigin(buttonOrigin);
         }
     }
 

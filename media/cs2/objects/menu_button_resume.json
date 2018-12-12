@@ -1,0 +1,27 @@
+{
+    "Root":
+    {
+        "Name": "menu_button_resume.root",
+        "Nodes": [
+            {
+                "Name": "menu_button_resume.node",
+                "Mesh": 
+                {
+                    "Name": "menu_button_resume.mesh",
+                    "MaterialMapping": 
+                    [
+                        {
+                            "MaterialIndex": 0,
+                            "Material":
+                            {
+                                "Name": "menu_button_resume.material",
+                                "Material": "cs2:materials/menu_button_resume.json"
+                            }
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+}
+

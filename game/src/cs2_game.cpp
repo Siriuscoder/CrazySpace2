@@ -22,6 +22,16 @@ namespace CS2
     CS2Game::CS2Game()
     {}
 
+    const std::string CS2Game::assetPackageName()
+    {
+        return "cs2";
+    }
+
+    const std::string CS2Game::assetObjectsPath()
+    {
+        return assetPackageName() + ":objects/";
+    }
+
     void CS2Game::initGame()
     {
         mEngine.reset(new lite3dpp::Main());
@@ -56,7 +66,7 @@ namespace CS2
         }
 
         lite3dpp::ConfigurationWriter reslocation;
-        reslocation.set(L"Name", L"cs2")
+        reslocation.set(L"Name", assetPackageName())
             .set(L"Path", L"cs2/")
             .set(L"FileCacheMaxSize", 0xA00000);
 
@@ -85,7 +95,7 @@ namespace CS2
         mEngine->initFromConfigString(json.c_str());
     }
 
-    void CS2Game::calculateGameAreaMetrics(kmVec2 &resolution, kmVec2 &origin) const
+    void CS2Game::calculateGameAreaMetrics(kmVec2 &origin, kmVec2 &resolution) const
     {
         assert(mEngine->window());
         // Get real windows size
@@ -94,24 +104,24 @@ namespace CS2
 
         if (rwidth > rheight)
         {
-            resolution.x = rheight / wAspect;
+            resolution.x = rheight / WindowAspect;
             resolution.y = rheight;
         }
         else
         {
-            if (rwidth * wAspect > rheight)
+            if (rwidth * WindowAspect > rheight)
             {
-                resolution.x = rheight / wAspect;
+                resolution.x = rheight / WindowAspect;
                 resolution.y = rheight;
             }
             else
             {
                 resolution.x = rwidth;
-                resolution.y = rwidth * wAspect;
+                resolution.y = rwidth * WindowAspect;
             }
         }
 
-        origin.x = (rwidth + resolution.x) / 2.0f;
+        origin.x = (rwidth - resolution.x) / 2.0f;
         origin.y = 0.0f;
     }
 

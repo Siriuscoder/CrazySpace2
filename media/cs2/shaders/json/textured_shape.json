@@ -1,0 +1,7 @@
+{
+    "Sources": 
+    [
+        "cs2:shaders/sources/textured_shape.vs",
+        "cs2:shaders/sources/textured_shape.ps"
+    ]
+}
