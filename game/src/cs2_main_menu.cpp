@@ -24,7 +24,8 @@ namespace CS2
 {
     CS2MainMenu::CS2MainMenu(CS2Game &game) :
         CS2EngineListener(game.getEngine()),
-        mGame(game)
+        mGame(game),
+        mMainMenuScene(nullptr)
     {}
 
     void CS2MainMenu::animate(int32_t firedPerRound, uint64_t deltaMs)
@@ -40,25 +41,33 @@ namespace CS2
             "cs2:scenes/main_menu.json");
 
         createMenu();
+        show(false);
     }
 
     void CS2MainMenu::createMenu()
     {
-        kmVec2 resolution, origin;
+        kmVec2 resolution, origin, buttonSize;
+        kmVec4 background = { 0.2, 0.2, 0.2, 0.4 };
         mGame.calculateGameAreaMetrics(resolution, origin);
 
-        lite3dpp::ConfigurationWriter panelJson;
-        panelJson.set(L"Model", L"Plane")
-            .set(L"PlainSize", resolution);
+        buttonSize.x = resolution.x * ButtonRelatedXSize;
+        buttonSize.y = ButtonHeight;
 
-        lite3dpp::ConfigurationWriter buttonJson;
-        buttonJson.set(L"Model", L"Plane")
-            .set(L"PlainSize", resolution);
+        mMenuPanel.reset(new CS2Panel("menu_panel", *mMainMenuScene, origin, resolution));
+        mMenuButtonNewGame.reset(new CS2Button("menu_button_new_game", *mMainMenuScene, origin, buttonSize, "New Game",
+            "cs2:fonts/arial.ttf", background, 16, mMenuPanel.get()));
+        mMenuButtonResume.reset(new CS2Button("menu_button_resume", *mMainMenuScene, origin, buttonSize, "Resume",
+            "cs2:fonts/arial.ttf", background, 14, mMenuPanel.get()));
+        mMenuButtonExit.reset(new CS2Button("menu_button_exit", *mMainMenuScene, origin, buttonSize, "Exit",
+            "cs2:fonts/arial.ttf", background, 14, mMenuPanel.get()));
+    }
 
-        // Preload menu and button mesh
-        getEngine().getResourceManager()->queryResourceFromJson<lite3dpp::Mesh>("menu.mesh", panelJson.write());
-        getEngine().getResourceManager()->queryResourceFromJson<lite3dpp::Mesh>("menu_button.mesh", buttonJson.write());
-
+    void CS2MainMenu::engineStops()
+    {
+        mMenuButtonExit.reset();
+        mMenuButtonResume.reset();
+        mMenuButtonNewGame.reset();
+        mMenuPanel.reset();
     }
 
     void CS2MainMenu::processEvent(SDL_Event *e)
@@ -68,6 +77,55 @@ namespace CS2
             /* exit */
             if (e->key.keysym.sym == SDLK_ESCAPE)
                 getEngine().stop();
+        }
+
+        // Post events to GUI
+        if (mMenuPanel)
+            mMenuPanel->processEvent(e);
+    }
+
+    bool CS2MainMenu::isVisible()
+    {
+        if (mMenuPanel)
+            return mMenuPanel->getObject()->isEnabled();
+
+        return false;
+    }
+
+    void CS2MainMenu::show(bool resumeButton)
+    {
+        if (mMenuPanel && mMenuButtonNewGame && mMenuButtonResume && mMenuButtonExit)
+        {
+            kmVec2 buttonOrigin;
+            buttonOrigin.x = mMenuPanel->getSize().x * (1 - ButtonRelatedXSize) / 2;
+            buttonOrigin.y = -ButtonHeight;
+
+            mMenuPanel->show();
+
+            mMenuButtonNewGame->show();
+            mMenuButtonNewGame->setOrigin(buttonOrigin);
+
+            if (resumeButton)
+            {
+                mMenuButtonResume->show();
+                buttonOrigin.y -= ButtonHeight + 4;
+                mMenuButtonResume->setOrigin(buttonOrigin);
+            }
+
+            mMenuButtonExit->show();
+            buttonOrigin.y -= ButtonHeight + 4;
+            mMenuButtonResume->setOrigin(buttonOrigin);
+        }
+    }
+
+    void CS2MainMenu::hide()
+    {
+        if (mMenuPanel && mMenuButtonNewGame && mMenuButtonResume && mMenuButtonExit)
+        {
+            mMenuPanel->hide();
+            mMenuButtonNewGame->hide();
+            mMenuButtonResume->hide();
+            mMenuButtonExit->hide();
         }
     }
 }

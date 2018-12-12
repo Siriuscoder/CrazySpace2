@@ -27,10 +27,18 @@ namespace CS2
     {
     public:
 
+        const float ButtonRelatedXSize = 0.8f;
+        const float ButtonHeight = 50;
+
         CS2MainMenu(CS2Game &game);
 
         void animate(int32_t firedPerRound, uint64_t deltaMs) override;
         void engineLoad() override;
+        void engineStops() override;
+
+        bool isVisible();
+        void show(bool resumeButton);
+        void hide();
 
     protected:
         
@@ -41,5 +49,9 @@ namespace CS2
 
         CS2Game &mGame;
         lite3dpp::Scene *mMainMenuScene;
+        std::unique_ptr<CS2Panel> mMenuPanel;
+        std::unique_ptr<CS2Button> mMenuButtonNewGame;
+        std::unique_ptr<CS2Button> mMenuButtonResume;
+        std::unique_ptr<CS2Button> mMenuButtonExit;
     };
 }

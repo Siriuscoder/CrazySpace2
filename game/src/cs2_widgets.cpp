@@ -15,26 +15,182 @@
 *	You should have received a copy of the GNU General Public License
 *	along with CrazySpace2.  If not, see <http://www.gnu.org/licenses/>.
 *******************************************************************************/
-#include <sstream>
-
 #include <cs2_game.h>
 #include <cs2_widgets.h>
 
 namespace CS2
 {
-    CS2Widget::CS2Widget(lite3dpp::Scene &scene, const kmVec2 &origin) :
+    CS2Widget::CS2Widget(const std::string &name, lite3dpp::Scene &scene, const kmVec2 &origin, 
+        const kmVec2 &size, CS2Widget *parent) :
+        mName(name),
         mScene(scene),
-        mOrigin(origin)
-    {}
-
-    CS2Panel::CS2Panel(lite3dpp::Scene &scene, const kmVec2 &origin, const kmVec2 &size) : 
-        CS2Widget(scene, origin),
-        mSize(size)
-    {}
-
-    CS2Button::CS2Button(lite3dpp::Scene &scene, const kmVec2 &origin, const kmVec2 &size, const std::string &text) : 
-        CS2Widget(scene, origin),
         mSize(size),
-        mText(text)
-    {}
+        mParent(parent),
+        mWidgetObject(nullptr)
+    {
+        lite3dpp::ConfigurationWriter meshParams;
+        meshParams.set(L"Model", L"Plane")
+            .set(L"PlainSize", size);
+
+        // Preload widget mesh simple plane
+        scene.getMain().getResourceManager()->queryResourceFromJson<lite3dpp::Mesh>(name + ".mesh", meshParams.write());
+        
+        if (parent)
+            parent->addChild(this);
+
+        mOrigin.x = origin.x;
+        mOrigin.y = origin.y;
+        mOrigin.z = parent ? parent->mOrigin.z + 1.0 : 0.0;
+    }
+
+    CS2Widget::~CS2Widget()
+    {
+        if (mParent)
+            mParent->removeChild(this);
+
+        // unload widget mesh
+        mScene.getMain().getResourceManager()->releaseResource(mName + ".mesh");
+    }
+
+    void CS2Widget::addChild(CS2Widget *widget)
+    {
+        auto it = mChilds.find(widget->getName());
+        if (it == mChilds.end())
+            LITE3D_THROW("Dublicate widget " << widget->getName());
+
+        mChilds[widget->getName()] = widget;
+    }
+
+    void CS2Widget::removeChild(CS2Widget *widget)
+    {
+        auto it = mChilds.find(widget->getName());
+        if (it == mChilds.end())
+            LITE3D_THROW("Widget not found " << widget->getName());
+
+        mChilds.erase(it);
+    }
+
+    void CS2Widget::processEvent(SDL_Event *sysevent)
+    {
+        if (sysevent->type = SDL_MOUSEMOTION)
+        {
+            SDL_Event relevent = *sysevent;
+            relevent.motion.x = relevent.motion.x - mOrigin.x;
+            relevent.motion.y = relevent.motion.y + mOrigin.y;
+
+            if (relevent.motion.x >= 0 && relevent.motion.x < mSize.x &&
+                relevent.motion.y >= 0 && relevent.motion.y < mSize.y)
+            {
+                kmVec2 mouseRelativePos = {
+                    static_cast<float>(relevent.motion.x),
+                    static_cast<float>(relevent.motion.y)
+                };
+
+                if (mMouseMoveHandler)
+                    mMouseMoveHandler(this, mouseRelativePos);
+
+                for (auto &w : mChilds)
+                    w.second->processEvent(&relevent);
+            }
+        }
+        else if (sysevent->type = SDL_MOUSEBUTTONUP)
+        {
+            if (sysevent->button.clicks == 1)
+            {
+                SDL_Event relevent = *sysevent;
+                relevent.button.x = relevent.button.x - mOrigin.x;
+                relevent.button.y = relevent.button.y + mOrigin.y;
+
+                if (relevent.button.x >= 0 && relevent.button.x < mSize.x &&
+                    relevent.button.y >= 0 && relevent.button.y < mSize.y)
+                {
+                    kmVec2 mouseRelativePos = {
+                        static_cast<float>(relevent.button.x),
+                        static_cast<float>(relevent.button.y)
+                    };
+
+                    if (mMouseClickHandler)
+                        mMouseClickHandler(this, mouseRelativePos);
+
+                    for (auto &w : mChilds)
+                        w.second->processEvent(&relevent);
+                }
+            }
+        }
+    }
+
+    void CS2Widget::show()
+    {
+        mWidgetObject->enable();
+    }
+
+    void CS2Widget::hide()
+    {
+        mWidgetObject->disable();
+    }
+
+    void CS2Widget::setOrigin(const kmVec2 &origin)
+    {
+        assert(mWidgetObject);
+
+        mOrigin.x = origin.x;
+        mOrigin.y = origin.y;
+        mWidgetObject->getRoot()->setPosition(mOrigin);
+    }
+
+    CS2Panel::CS2Panel(const std::string &name, lite3dpp::Scene &scene, const kmVec2 &origin, 
+        const kmVec2 &size, CS2Widget *parent) :
+        CS2Widget(name, scene, origin, size, parent)
+    {
+        std::string objPath = "cs2:objects/";
+        mWidgetObject = scene.addObject(name, objPath + name + ".json", parent ? parent->getObject() : nullptr);
+        mWidgetObject->getRoot()->setPosition(mOrigin);
+    }
+
+    CS2Panel::~CS2Panel()
+    {
+        assert(mWidgetObject);
+
+        mScene.getMain().getResourceManager()->releaseResource(mName + ".material");
+        mScene.removeObject(mWidgetObject->getName());
+    }
+
+    CS2Button::CS2Button(const std::string &name, lite3dpp::Scene &scene, const kmVec2 &origin, const kmVec2 &size, 
+        const std::string &text, const std::string &font, const kmVec4 &background, int fontSize, CS2Widget *parent) :
+        CS2Widget(name, scene, origin, size, parent),
+        mText(text),
+        mFontTexture(nullptr)
+    {
+        lite3dpp::ConfigurationWriter fontTextureParams;
+        fontTextureParams.set(L"TextureType", L"2D")
+            .set(L"Filtering", "None")
+            .set(L"Wrapping", "ClampToEdge")
+            .set(L"Compression", false)
+            .set(L"TextureFormat", "RGBA")
+            .set(L"Width", size.x)
+            .set(L"Height", size.y)
+            .set(L"Font", font)
+            .set(L"FontSize", fontSize)
+            .set(L"BlankColor", background);
+
+        // load button texture, font texture
+        mFontTexture = scene.getMain().getResourceManager()->queryResourceFromJson<lite3dpp::lite3dpp_font::FontTexture>(
+            name + ".texture", fontTextureParams.write());
+
+        kmVec2 textPos = { 5, 5 };
+        mFontTexture->drawText(mText, textPos, PassiveColor);
+
+        std::string objPath = "cs2:objects/";
+        mWidgetObject = scene.addObject(name, objPath + name + ".json", parent ? parent->getObject() : nullptr);
+        mWidgetObject->getRoot()->setPosition(mOrigin);
+    }
+
+    CS2Button::~CS2Button()
+    {
+        assert(mWidgetObject);
+
+        mScene.getMain().getResourceManager()->releaseResource(mName + ".texture");
+        mScene.getMain().getResourceManager()->releaseResource(mName + ".material");
+        mScene.removeObject(mWidgetObject->getName());
+    }
 }

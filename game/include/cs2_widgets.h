@@ -18,6 +18,8 @@
 #pragma once 
 
 #include <lite3dpp/lite3dpp_main.h>
+#include <lite3dpp_font/lite3dpp_font_texture.h>
+
 #include <cs2_common.h>
 
 namespace CS2
@@ -26,36 +28,78 @@ namespace CS2
     {
     public:
 
-        CS2Widget(lite3dpp::Scene &scene, const kmVec2 &origin);
+        using MouseClickHandler = std::function<void(CS2Widget *, const kmVec2 &)>;
+        using MouseMoveHandler = std::function<void(CS2Widget *, const kmVec2 &)>;
+        using MouseTextInputHandler = std::function<void(CS2Widget *, char)>;
+
+        CS2Widget(const std::string &name, lite3dpp::Scene &scene, const kmVec2 &origin, 
+            const kmVec2 &size, CS2Widget *parent = nullptr);
+        virtual ~CS2Widget();
+
+
+        inline const std::string &getName() const
+        { return mName; }
+        inline lite3dpp::SceneObject *getObject()
+        { return mWidgetObject; }
+        inline const kmVec3 &getOrigin() const
+        { return mOrigin; }
+        inline const kmVec2 &getSize() const
+        { return mSize; }
+
+        void setOrigin(const kmVec2 &origin);
+
+        void show();
+        void hide();
+
+        virtual void processEvent(SDL_Event *sysevent);
+
+        inline void onWidgetMouseClick(const MouseClickHandler &handler)
+        { mMouseClickHandler = handler; }
+        inline void onWidgetMouseMove(const MouseMoveHandler &handler)
+        { mMouseMoveHandler = handler; }
 
     protected:
 
-        kmVec2 mOrigin;
+        void addChild(CS2Widget *widget);
+        void removeChild(CS2Widget *widget);
+
+        std::string mName;
         lite3dpp::Scene &mScene;
+        kmVec3 mOrigin;
+        kmVec2 mSize;
+        CS2Widget *mParent;
+        std::map<std::string, CS2Widget *> mChilds;
+        lite3dpp::SceneObject *mWidgetObject;
+        MouseClickHandler mMouseClickHandler;
+        MouseMoveHandler mMouseMoveHandler;
     };
 
     class CS2Panel : public CS2Widget
     {
     public:
 
-        CS2Panel(lite3dpp::Scene &scene, const kmVec2 &origin,
-            const kmVec2 &size);
+        CS2Panel(const std::string &name, lite3dpp::Scene &scene, const kmVec2 &origin,
+            const kmVec2 &size, CS2Widget *parent = nullptr);
 
-    protected:
-
-        kmVec2 mSize;
+        ~CS2Panel();
     };
 
     class CS2Button : public CS2Widget
     {
     public:
 
-        CS2Button(lite3dpp::Scene &scene, const kmVec2 &origin,
-            const kmVec2 &size, const std::string &text);
+        const kmVec4 PassiveColor = { 0.6, 0.6, 0.6, 1.0 };
+        const kmVec4 ActiveColor = { 1.0, 1.0, 1.0, 1.0 };
+
+        CS2Button(const std::string &name, lite3dpp::Scene &scene, const kmVec2 &origin,
+            const kmVec2 &size, const std::string &text, const std::string &font,
+            const kmVec4 &background, int fontSize, CS2Widget *parent = nullptr);
+
+        ~CS2Button();
 
     protected:
 
-        kmVec2 mSize;
         std::string mText;
+        lite3dpp::lite3dpp_font::FontTexture *mFontTexture;
     };
 }

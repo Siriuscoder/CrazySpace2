@@ -31,7 +31,7 @@ namespace CS2
         ~CS2EngineListener();
         
         virtual void engineLoad();
-        virtual void engineShut();
+        virtual void engineStops();
         virtual void animate(int32_t firedPerRound, uint64_t deltaMs);
         virtual void regularTimerTick(lite3d_timer *timerid);
 

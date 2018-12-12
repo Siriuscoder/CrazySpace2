@@ -33,7 +33,7 @@ namespace CS2
     void CS2EngineListener::engineLoad()
     {}
 
-    void CS2EngineListener::engineShut()
+    void CS2EngineListener::engineStops()
     {}
 
     void CS2EngineListener::animate(int32_t firedPerRound, uint64_t deltaMs)
@@ -49,7 +49,7 @@ namespace CS2
 
     void CS2EngineListener::shut()
     {
-        engineShut();
+        engineStops();
     }
 
     void CS2EngineListener::timerTick(lite3d_timer *timerid)
