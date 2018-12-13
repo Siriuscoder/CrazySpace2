@@ -30,13 +30,18 @@ namespace CS2
         const float WindowAspect = 2.0f;
         static const std::string assetPackageName();
         static const std::string assetObjectsPath();
+        static const std::string assetMenuFont();
 
         CS2Game();
 
-        void initGame();
+        /* create engine objects */
+        void init();
+        /* configure engine using command line */
         void configure(const std::vector<std::string> &args);
-        void startGame();
-        void finishGame();
+        /* start engine, create window, init opengl, then pump message loop */
+        void run();
+        /* destroy engine and other internal objects */
+        void finish();
 
         lite3dpp::Main &getEngine()
         { return *mEngine; }
@@ -44,6 +49,13 @@ namespace CS2
         { return *mEngine; }
 
         void calculateGameAreaMetrics(kmVec2 &origin, kmVec2 &resolution) const;
+
+        /* Begin new game */
+        void newGame();
+        /* Return to current game from main menu */
+        void resumeGame();
+        /* Exit from game and stop application */
+        void exitGame();
 
     private:
 

@@ -40,37 +40,72 @@ namespace CS2
         mMainMenuScene = getEngine().getResourceManager()->queryResource<lite3dpp::Scene>("main_menu_scene",
             "cs2:scenes/main_menu.json");
 
-        // setup camera
-        lite3dpp::Camera *menuCamera = getEngine().getCamera("main_menu_camera");
-        menuCamera->setupOrtho(-5, 20, 0, getEngine().window()->width(),
-            -getEngine().window()->height(), 0);
-    
-        kmVec3 cameraPos = { 0, 0, 20 };
-        menuCamera->setPosition(cameraPos);
-        menuCamera->lookAt(KM_VEC3_ZERO);
-
+        setupCamera();
         createMenu();
         hide();
-        show(false);
+        show(true);
     }
 
     void CS2MainMenu::createMenu()
     {
         kmVec2 resolution, origin, buttonSize;
-        kmVec4 panelColor = { 0.2, 0.2, 0.2, 0.4 };
-        kmVec4 buttonColor = { 0.9, 0.2, 0.2, 0.4 };
         mGame.calculateGameAreaMetrics(origin, resolution);
 
         buttonSize.x = resolution.x * ButtonRelatedXSize;
         buttonSize.y = ButtonHeight;
 
-        mMenuPanel.reset(new CS2Panel("menu_panel", *mMainMenuScene, origin, resolution, panelColor));
-        mMenuButtonNewGame.reset(new CS2Button("menu_button_new_game", *mMainMenuScene, origin, buttonSize, "New Game",
-            "cs2:fonts/arial.ttf", buttonColor, 16, mMenuPanel.get()));
-        mMenuButtonResume.reset(new CS2Button("menu_button_resume", *mMainMenuScene, origin, buttonSize, "Resume",
-            "cs2:fonts/arial.ttf", buttonColor, 14, mMenuPanel.get()));
-        mMenuButtonExit.reset(new CS2Button("menu_button_exit", *mMainMenuScene, origin, buttonSize, "Exit",
-            "cs2:fonts/arial.ttf", buttonColor, 14, mMenuPanel.get()));
+        mMenuPanel.reset(new CS2Panel("menu_panel", *mMainMenuScene, origin, resolution, PanelColor));
+        mMenuButtonNewGame.reset(new CS2Button("menu_button_new_game", *mMainMenuScene, origin, buttonSize, "NEW GAME",
+            CS2Game::assetMenuFont(), ButtonInActiveColor, TextColor, 16, mMenuPanel.get()));
+        mMenuButtonResume.reset(new CS2Button("menu_button_resume", *mMainMenuScene, origin, buttonSize, "RESUME",
+            CS2Game::assetMenuFont(), ButtonInActiveColor, TextColor, 14, mMenuPanel.get()));
+        mMenuButtonExit.reset(new CS2Button("menu_button_exit", *mMainMenuScene, origin, buttonSize, "EXIT",
+            CS2Game::assetMenuFont(), ButtonInActiveColor, TextColor, 14, mMenuPanel.get()));
+
+        auto onMouseEnter = [this](CS2Widget *w, const kmVec2 &pos)
+        {
+            CS2Button *button = static_cast<CS2Button *>(w);
+            button->setButtonColor(ButtonActiveColor);
+        };
+
+        auto onMouseLeave = [this](CS2Widget *w, const kmVec2 &pos)
+        {
+            CS2Button *button = static_cast<CS2Button *>(w);
+            button->setButtonColor(ButtonInActiveColor);
+        };
+
+        mMenuButtonNewGame->setWidgetMouseEnterHandler(onMouseEnter);
+        mMenuButtonResume->setWidgetMouseEnterHandler(onMouseEnter);
+        mMenuButtonExit->setWidgetMouseEnterHandler(onMouseEnter);
+        mMenuButtonNewGame->setWidgetMouseLeaveHandler(onMouseLeave);
+        mMenuButtonResume->setWidgetMouseLeaveHandler(onMouseLeave);
+        mMenuButtonExit->setWidgetMouseLeaveHandler(onMouseLeave);
+
+        mMenuButtonNewGame->setWidgetMouseClickHandler([this](CS2Widget *, const kmVec2 &)
+        {
+            mGame.newGame();
+        });
+
+        mMenuButtonResume->setWidgetMouseClickHandler([this](CS2Widget *, const kmVec2 &)
+        {
+            mGame.resumeGame();
+        });
+
+        mMenuButtonExit->setWidgetMouseClickHandler([this](CS2Widget *, const kmVec2 &)
+        {
+            mGame.exitGame();
+        });
+    }
+
+    void CS2MainMenu::setupCamera()
+    {
+        lite3dpp::Camera *menuCamera = getEngine().getCamera("main_menu_camera");
+        menuCamera->setupOrtho(-5, 20, 0, getEngine().window()->width(),
+            -getEngine().window()->height(), 0);
+
+        kmVec3 cameraPos = { 0, 0, 20 };
+        menuCamera->setPosition(cameraPos);
+        menuCamera->lookAt(KM_VEC3_ZERO);
     }
 
     void CS2MainMenu::engineStops()
@@ -90,7 +125,7 @@ namespace CS2
                 getEngine().stop();
         }
 
-        // Post events to GUI
+        // Post events to widgets 
         if (mMenuPanel)
             mMenuPanel->processEvent(e);
     }

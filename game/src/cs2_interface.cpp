@@ -27,7 +27,7 @@ int cs2_init()
     try
     {
         gameInstance.reset(new CS2::CS2Game());
-        gameInstance->initGame();
+        gameInstance->init();
     }
     catch (std::exception &ex)
     {
@@ -53,7 +53,7 @@ int cs2_start(int count, char *args[])
             commandLine.push_back(args[i]);
 
         gameInstance->configure(commandLine);
-        gameInstance->startGame();
+        gameInstance->run();
     }
     catch (std::exception &ex)
     {
@@ -66,7 +66,7 @@ int cs2_start(int count, char *args[])
 
 int cs2_finalize()
 {
-    gameInstance->finishGame();
+    gameInstance->finish();
     gameInstance.reset();
     return 0;
 }

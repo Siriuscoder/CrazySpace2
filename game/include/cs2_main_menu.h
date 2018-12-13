@@ -29,6 +29,12 @@ namespace CS2
 
         const float ButtonRelatedXSize = 0.8f;
         const float ButtonHeight = 50;
+        const kmVec4 PanelColor = { 0.2, 0.2, 0.2, 0.4 };
+        const kmVec4 ButtonInActiveColor = { 0.8, 0.2, 0.2, 0.4 };
+        const kmVec4 ButtonActiveColor = { 0.2, 0.8, 0.2, 0.4 };
+        const kmVec4 TextColor = { 0.8, 0.8, 0.8, 1 };
+
+    public:
 
         CS2MainMenu(CS2Game &game);
 
@@ -43,6 +49,7 @@ namespace CS2
     protected:
         
         void createMenu();
+        void setupCamera();
         void processEvent(SDL_Event *e) override;
 
     private:

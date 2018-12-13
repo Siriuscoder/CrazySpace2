@@ -32,7 +32,12 @@ namespace CS2
         return assetPackageName() + ":objects/";
     }
 
-    void CS2Game::initGame()
+    const std::string CS2Game::assetMenuFont()
+    {
+        return assetPackageName() + ":fonts/arial.ttf";
+    }
+
+    void CS2Game::init()
     {
         mEngine.reset(new lite3dpp::Main());
         mMainMenu.reset(new CS2MainMenu(*this));
@@ -125,15 +130,31 @@ namespace CS2
         origin.y = 0.0f;
     }
 
-    void CS2Game::startGame()
+    void CS2Game::run()
     {
         mEngine->run();
     }
 
-    void CS2Game::finishGame()
+    void CS2Game::finish()
     {
         mBackground.reset();
         mMainMenu.reset();
         mEngine.reset();
+    }
+
+    void CS2Game::newGame()
+    {
+
+    }
+
+    void CS2Game::resumeGame()
+    {
+
+    }
+
+    void CS2Game::exitGame()
+    {
+        /* stop engine, unload all resources, exit from main loop */
+        mEngine->stop();
     }
 }

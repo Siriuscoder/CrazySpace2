@@ -28,9 +28,7 @@ namespace CS2
     {
     public:
 
-        using MouseClickHandler = std::function<void(CS2Widget *, const kmVec2 &)>;
-        using MouseMoveHandler = std::function<void(CS2Widget *, const kmVec2 &)>;
-        using MouseTextInputHandler = std::function<void(CS2Widget *, char)>;
+        using MouseEventHandler = std::function<void(CS2Widget *, const kmVec2 &)>;
 
         CS2Widget(const std::string &name, lite3dpp::Scene &scene, const kmVec2 &origin, 
             const kmVec2 &size, CS2Widget *parent = nullptr);
@@ -53,10 +51,15 @@ namespace CS2
 
         virtual void processEvent(SDL_Event *sysevent);
 
-        inline void setWidgetMouseClick(const MouseClickHandler &handler)
+        inline void setWidgetMouseClickHandler(const MouseEventHandler &handler)
         { mMouseClickHandler = handler; }
-        inline void setWidgetMouseMoveHandler(const MouseMoveHandler &handler)
+        inline void setWidgetMouseMoveHandler(const MouseEventHandler &handler)
         { mMouseMoveHandler = handler; }
+        inline void setWidgetMouseEnterHandler(const MouseEventHandler &handler)
+        { mMouseEnterHandler = handler; }
+        inline void setWidgetMouseLeaveHandler(const MouseEventHandler &handler)
+        { mMouseLeaveHandler = handler; }
+
 
     protected:
 
@@ -65,6 +68,8 @@ namespace CS2
 
         virtual void onWidgetMouseClick(const kmVec2 &mousePos);
         virtual void onWidgetMouseMove(const kmVec2 &mousePos);
+        virtual void onWidgetMouseEnter(const kmVec2 &mousePos);
+        virtual void onWidgetMouseLeave(const kmVec2 &mousePos);
 
         std::string mName;
         lite3dpp::Scene &mScene;
@@ -73,8 +78,11 @@ namespace CS2
         CS2Widget *mParent;
         std::map<std::string, CS2Widget *> mChilds;
         lite3dpp::SceneObject *mWidgetObject;
-        MouseClickHandler mMouseClickHandler;
-        MouseMoveHandler mMouseMoveHandler;
+        bool mIsMouseCursorUnderWidget;
+        MouseEventHandler mMouseClickHandler;
+        MouseEventHandler mMouseMoveHandler;
+        MouseEventHandler mMouseEnterHandler;
+        MouseEventHandler mMouseLeaveHandler;
     };
 
     class CS2Panel : public CS2Widget
@@ -85,26 +93,34 @@ namespace CS2
             const kmVec2 &size, const kmVec4 &color, CS2Widget *parent = nullptr);
 
         ~CS2Panel();
+
+        void setPanelColor(const kmVec4 &color);
+
+    protected:
+
+        lite3dpp::Material *mMaterial;
+        kmVec4 mPanelColor;
     };
 
     class CS2Button : public CS2Widget
     {
     public:
 
-        const kmVec4 PassiveColor = { 0.6, 0.6, 0.6, 1.0 };
-        const kmVec4 ActiveColor = { 1.0, 1.0, 1.0, 1.0 };
-
         CS2Button(const std::string &name, lite3dpp::Scene &scene, const kmVec2 &origin,
             const kmVec2 &size, const std::string &text, const std::string &font,
-            const kmVec4 &color, int fontSize, CS2Widget *parent = nullptr);
+            const kmVec4 &buttonColor, const kmVec4 &fontColor, int fontSize, CS2Widget *parent = nullptr);
+
+        void setButtonColor(const kmVec4 &color);
+        void setFontColor(const kmVec4 &color);
+        void refreshText();
 
         ~CS2Button();
 
     protected:
 
-        void onWidgetMouseMove(const kmVec2 &mousePos) override;
-
         std::string mText;
         lite3dpp::lite3dpp_font::FontTexture *mFontTexture;
+        kmVec4 mButtonColor;
+        kmVec4 mFontColor;
     };
 }

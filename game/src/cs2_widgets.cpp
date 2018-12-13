@@ -26,7 +26,8 @@ namespace CS2
         mScene(scene),
         mSize(size),
         mParent(parent),
-        mWidgetObject(nullptr)
+        mWidgetObject(nullptr),
+        mIsMouseCursorUnderWidget(false)
     {
         lite3dpp::ConfigurationWriter meshParams;
         meshParams.set(L"Model", L"Plain")
@@ -72,6 +73,9 @@ namespace CS2
 
     void CS2Widget::processEvent(SDL_Event *sysevent)
     {
+        if (mWidgetObject && !mWidgetObject->isEnabled())
+            return;
+
         if (sysevent->type == SDL_MOUSEMOTION)
         {
             SDL_Event relevent = *sysevent;
@@ -79,10 +83,30 @@ namespace CS2
             relevent.motion.y = relevent.motion.y + mOrigin.y;
 
             kmVec2 mouseRelativePos = {
-                static_cast<float>(relevent.motion.x),
-                static_cast<float>(relevent.motion.y)
+                static_cast<float>(relevent.button.x),
+                static_cast<float>(relevent.button.y)
             };
-            onWidgetMouseMove(mouseRelativePos);
+
+            if (relevent.button.x >= 0 && relevent.button.x < mSize.x &&
+                relevent.button.y >= 0 && relevent.button.y < mSize.y)
+            {
+                onWidgetMouseMove(mouseRelativePos);
+
+                if (!mIsMouseCursorUnderWidget)
+                {
+                    onWidgetMouseEnter(mouseRelativePos);
+                    mIsMouseCursorUnderWidget = true;
+                }
+            }
+            else
+            {
+                if (mIsMouseCursorUnderWidget)
+                {
+                    onWidgetMouseLeave(mouseRelativePos);
+                    mIsMouseCursorUnderWidget = false;
+                }
+            }
+
             for (auto &w : mChilds)
                 w.second->processEvent(&relevent);
         }
@@ -103,10 +127,10 @@ namespace CS2
                     };
 
                     onWidgetMouseClick(mouseRelativePos);
-
-                    for (auto &w : mChilds)
-                        w.second->processEvent(&relevent);
                 }
+
+                for (auto &w : mChilds)
+                    w.second->processEvent(&relevent);
             }
         }
     }
@@ -119,12 +143,20 @@ namespace CS2
 
     void CS2Widget::onWidgetMouseMove(const kmVec2 &mousePos)
     {
-        if (mousePos.x >= 0 && mousePos.x < mSize.x &&
-            mousePos.y >= 0 && mousePos.y < mSize.y)
-        {
-            if (mMouseMoveHandler)
-                mMouseMoveHandler(this, mousePos);
-        }
+        if (mMouseMoveHandler)
+            mMouseMoveHandler(this, mousePos);
+    }
+
+    void CS2Widget::onWidgetMouseEnter(const kmVec2 &mousePos)
+    {
+        if (mMouseEnterHandler)
+            mMouseEnterHandler(this, mousePos);
+    }
+
+    void CS2Widget::onWidgetMouseLeave(const kmVec2 &mousePos)
+    {
+        if (mMouseLeaveHandler)
+            mMouseLeaveHandler(this, mousePos);
     }
 
     void CS2Widget::show()
@@ -148,17 +180,15 @@ namespace CS2
 
     CS2Panel::CS2Panel(const std::string &name, lite3dpp::Scene &scene, const kmVec2 &origin, 
         const kmVec2 &size, const kmVec4 &color, CS2Widget *parent) :
-        CS2Widget(name, scene, origin, size, parent)
+        CS2Widget(name, scene, origin, size, parent),
+        mMaterial(nullptr)
     {
         mWidgetObject = scene.addObject(name, CS2Game::assetObjectsPath() + name + ".json", 
             parent ? parent->getObject() : nullptr);
 
         mWidgetObject->getRoot()->setPosition(mOrigin);
 
-        // set panel color
-        lite3dpp::Material *meterial = scene.getMain().getResourceManager()->
-            queryResource<lite3dpp::Material>(name + ".material");
-        meterial->setFloatv4Parameter(1, "color", color);
+        setPanelColor(color);
     }
 
     CS2Panel::~CS2Panel()
@@ -169,11 +199,23 @@ namespace CS2
         mScene.removeObject(mWidgetObject->getName());
     }
 
+    void CS2Panel::setPanelColor(const kmVec4 &color)
+    {
+        if (!mMaterial)
+            mMaterial = mScene.getMain().getResourceManager()->queryResource<lite3dpp::Material>(mName + ".material");
+
+        mMaterial->setFloatv4Parameter(1, "color", color);
+        mPanelColor = color;
+    }
+
     CS2Button::CS2Button(const std::string &name, lite3dpp::Scene &scene, const kmVec2 &origin, const kmVec2 &size, 
-        const std::string &text, const std::string &font, const kmVec4 &color, int fontSize, CS2Widget *parent) :
+        const std::string &text, const std::string &font, const kmVec4 &buttonColor, const kmVec4 &fontColor, 
+        int fontSize, CS2Widget *parent) :
         CS2Widget(name, scene, origin, size, parent),
         mText(text),
-        mFontTexture(nullptr)
+        mFontTexture(nullptr),
+        mButtonColor(buttonColor),
+        mFontColor(fontColor)
     {
         lite3dpp::ConfigurationWriter fontTextureParams;
         fontTextureParams.set(L"TextureType", L"2D")
@@ -185,21 +227,38 @@ namespace CS2
             .set(L"Height", size.y)
             .set(L"Font", font)
             .set(L"FontSize", fontSize)
-            .set(L"BlankColor", color);
+            .set(L"BlankColor", buttonColor);
 
         // load button texture, font texture
         mFontTexture = scene.getMain().getResourceManager()->queryResourceFromJson<lite3dpp::lite3dpp_font::FontTexture>(
             name + ".texture", fontTextureParams.write());
 
-        kmVec2 textPos = { 5, 5 };
-        mFontTexture->clean();
-        mFontTexture->drawText(mText, textPos, PassiveColor);
-        mFontTexture->uploadChanges();
-
         mWidgetObject = scene.addObject(name, CS2Game::assetObjectsPath() + name + ".json", 
             parent ? parent->getObject() : nullptr);
 
         mWidgetObject->getRoot()->setPosition(mOrigin);
+
+        refreshText();
+    }
+
+    void CS2Button::setButtonColor(const kmVec4 &color)
+    {
+        mButtonColor = color;
+        refreshText();
+    }
+
+    void CS2Button::setFontColor(const kmVec4 &color)
+    {
+        mFontColor = color;
+        refreshText();
+    }
+
+    void CS2Button::refreshText()
+    {
+        kmVec2 textPos = { 5, 5 };
+        mFontTexture->clean(mButtonColor);
+        mFontTexture->drawText(mText, textPos, mFontColor);
+        mFontTexture->uploadChanges();
     }
 
     CS2Button::~CS2Button()
@@ -209,33 +268,5 @@ namespace CS2
         mScene.getMain().getResourceManager()->releaseResource(mName + ".texture");
         mScene.getMain().getResourceManager()->releaseResource(mName + ".material");
         mScene.removeObject(mWidgetObject->getName());
-    }
-
-    void CS2Button::onWidgetMouseMove(const kmVec2 &mousePos)
-    {
-        CS2Widget::onWidgetMouseMove(mousePos);
-
-        static bool active = false;
-        bool current = mousePos.x >= 0 && mousePos.x < mSize.x && mousePos.y >= 0 && mousePos.y < mSize.y;
-        
-        if (active != current)
-        {
-            if (current)
-            {
-                kmVec2 textPos = { 5, 5 };
-                mFontTexture->clean();
-                mFontTexture->drawText(mText, textPos, ActiveColor);
-                mFontTexture->uploadChanges();
-            }
-            else
-            {
-                kmVec2 textPos = { 5, 5 };
-                mFontTexture->clean();
-                mFontTexture->drawText(mText, textPos, PassiveColor);
-                mFontTexture->uploadChanges();
-            }
-
-            active = current;
-        }
     }
 }
