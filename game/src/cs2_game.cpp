@@ -22,6 +22,8 @@ namespace CS2
     CS2Game::CS2Game()
     {}
 
+    const float CS2Game::WindowAspect = 2.0f;
+
     const std::string CS2Game::assetPackageName()
     {
         return "cs2";
@@ -80,7 +82,7 @@ namespace CS2
 
         lite3dpp::String json = lite3dpp::ConfigurationWriter().set(L"LogLevel", logLevel)
             .set(L"logMuteStd", logLevel == 1)
-            .set(L"LogFile", logtofile)
+            .set(L"LogFile", logtofile ? "cs2.log" : "")
             .set(L"LogFlushAlways", false)
             .set(L"FixedUpdatesInterval", 30)
             .set(L"Minidump", true)
@@ -98,36 +100,6 @@ namespace CS2
             .set(L"ResourceLocations", reslocationArr).write();
 
         mEngine->initFromConfigString(json.c_str());
-    }
-
-    void CS2Game::calculateGameAreaMetrics(kmVec2 &origin, kmVec2 &resolution) const
-    {
-        assert(mEngine->window());
-        // Get real windows size
-        int rwidth = mEngine->window()->width();
-        int rheight = mEngine->window()->height();
-
-        if (rwidth > rheight)
-        {
-            resolution.x = rheight / WindowAspect;
-            resolution.y = rheight;
-        }
-        else
-        {
-            if (rwidth * WindowAspect > rheight)
-            {
-                resolution.x = rheight / WindowAspect;
-                resolution.y = rheight;
-            }
-            else
-            {
-                resolution.x = rwidth;
-                resolution.y = rwidth * WindowAspect;
-            }
-        }
-
-        origin.x = (rwidth - resolution.x) / 2.0f;
-        origin.y = 0.0f;
     }
 
     void CS2Game::run()

@@ -38,13 +38,14 @@ namespace CS2
 
         CS2MainMenu(CS2Game &game);
 
+        void calculateMainMenuMetrics(kmVec2 &origin, kmVec2 &resolution);
         void animate(int32_t firedPerRound, uint64_t deltaMs) override;
         void engineLoad() override;
         void engineStops() override;
 
-        bool isVisible();
-        void show(bool resumeButton);
-        void hide();
+        bool menuIsVisible() const;
+        void showMenu(bool resumeButton);
+        void hideMenu();
 
     protected:
         
@@ -56,6 +57,7 @@ namespace CS2
 
         CS2Game &mGame;
         lite3dpp::Scene *mMainMenuScene;
+        std::unique_ptr<CS2Panel> mDrawPanel;
         std::unique_ptr<CS2Panel> mMenuPanel;
         std::unique_ptr<CS2Button> mMenuButtonNewGame;
         std::unique_ptr<CS2Button> mMenuButtonResume;

@@ -28,6 +28,36 @@ namespace CS2
         mMainMenuScene(nullptr)
     {}
 
+    void CS2MainMenu::calculateMainMenuMetrics(kmVec2 &origin, kmVec2 &resolution)
+    {
+        assert(getEngine().window());
+        // Get real windows size
+        int rwidth = getEngine().window()->width();
+        int rheight = getEngine().window()->height();
+
+        if (rwidth > rheight)
+        {
+            resolution.x = rheight / CS2Game::WindowAspect;
+            resolution.y = rheight;
+        }
+        else
+        {
+            if (rwidth * CS2Game::WindowAspect > rheight)
+            {
+                resolution.x = rheight / CS2Game::WindowAspect;
+                resolution.y = rheight;
+            }
+            else
+            {
+                resolution.x = rwidth;
+                resolution.y = rwidth * CS2Game::WindowAspect;
+            }
+        }
+
+        origin.x = (rwidth - resolution.x) / 2.0f;
+        origin.y = 0.0f;
+    }
+
     void CS2MainMenu::animate(int32_t firedPerRound, uint64_t deltaMs)
     {
         // animate main menu here
@@ -35,26 +65,27 @@ namespace CS2
 
     void CS2MainMenu::engineLoad()
     {
-        // getEngine().window()->setBackgroundColor(KM_VEC4_ZERO);
+        getEngine().window()->setBackgroundColor(KM_VEC4_ZERO);
         // load main menu assets here
         mMainMenuScene = getEngine().getResourceManager()->queryResource<lite3dpp::Scene>("main_menu_scene",
             "cs2:scenes/main_menu.json");
 
         setupCamera();
         createMenu();
-        hide();
-        show(true);
+        hideMenu();
+        showMenu(true);
     }
 
     void CS2MainMenu::createMenu()
     {
         kmVec2 resolution, origin, buttonSize;
-        mGame.calculateGameAreaMetrics(origin, resolution);
+        calculateMainMenuMetrics(origin, resolution);
 
         buttonSize.x = resolution.x * ButtonRelatedXSize;
         buttonSize.y = ButtonHeight;
 
-        mMenuPanel.reset(new CS2Panel("menu_panel", *mMainMenuScene, origin, resolution, PanelColor));
+        mDrawPanel.reset(new CS2Panel("draw_panel", *mMainMenuScene, origin, resolution, PanelColor));
+        mMenuPanel.reset(new CS2Panel("menu_panel", *mMainMenuScene, origin, resolution, PanelColor, mDrawPanel.get()));
         mMenuButtonNewGame.reset(new CS2Button("menu_button_new_game", *mMainMenuScene, origin, buttonSize, "NEW GAME",
             CS2Game::assetMenuFont(), ButtonInActiveColor, TextColor, 16, mMenuPanel.get()));
         mMenuButtonResume.reset(new CS2Button("menu_button_resume", *mMainMenuScene, origin, buttonSize, "RESUME",
@@ -84,11 +115,13 @@ namespace CS2
         mMenuButtonNewGame->setWidgetMouseClickHandler([this](CS2Widget *, const kmVec2 &)
         {
             mGame.newGame();
+            hideMenu();
         });
 
         mMenuButtonResume->setWidgetMouseClickHandler([this](CS2Widget *, const kmVec2 &)
         {
             mGame.resumeGame();
+            hideMenu();
         });
 
         mMenuButtonExit->setWidgetMouseClickHandler([this](CS2Widget *, const kmVec2 &)
@@ -114,23 +147,25 @@ namespace CS2
         mMenuButtonResume.reset();
         mMenuButtonNewGame.reset();
         mMenuPanel.reset();
+        mDrawPanel.reset();
     }
 
     void CS2MainMenu::processEvent(SDL_Event *e)
     {
         if (e->type == SDL_KEYDOWN)
         {
-            /* exit */
-            if (e->key.keysym.sym == SDLK_ESCAPE)
-                getEngine().stop();
+            if (e->key.keysym.scancode == SDL_SCANCODE_ESCAPE)
+            {
+                showMenu(true);
+            }
         }
 
-        // Post events to widgets 
-        if (mMenuPanel)
-            mMenuPanel->processEvent(e);
+        // Post events to root widget
+        if (mDrawPanel)
+            mDrawPanel->processEvent(e);
     }
 
-    bool CS2MainMenu::isVisible()
+    bool CS2MainMenu::menuIsVisible() const
     {
         if (mMenuPanel)
             return mMenuPanel->getObject()->isEnabled();
@@ -138,40 +173,48 @@ namespace CS2
         return false;
     }
 
-    void CS2MainMenu::show(bool resumeButton)
+    void CS2MainMenu::showMenu(bool resumeButton)
     {
-        if (mMenuPanel && mMenuButtonNewGame && mMenuButtonResume && mMenuButtonExit)
+        assert(mDrawPanel);
+        assert(mMenuPanel);
+        assert(mMenuButtonNewGame);
+        assert(mMenuButtonResume);
+        assert(mMenuButtonExit);
+
+        kmVec2 buttonOrigin;
+        kmVec2 menuOrigin = { 0, 0 };
+        buttonOrigin.x = mMenuPanel->getSize().x * (1 - ButtonRelatedXSize) / 2;
+        buttonOrigin.y = -ButtonHeight;
+
+        mMenuPanel->show();
+        mMenuPanel->setOrigin(menuOrigin);
+
+        mMenuButtonNewGame->show();
+        mMenuButtonNewGame->setOrigin(buttonOrigin);
+
+        if (resumeButton)
         {
-            kmVec2 buttonOrigin;
-            buttonOrigin.x = mMenuPanel->getSize().x * (1 - ButtonRelatedXSize) / 2;
-            buttonOrigin.y = -ButtonHeight;
-
-            mMenuPanel->show();
-
-            mMenuButtonNewGame->show();
-            mMenuButtonNewGame->setOrigin(buttonOrigin);
-
-            if (resumeButton)
-            {
-                mMenuButtonResume->show();
-                buttonOrigin.y -= ButtonHeight + 4;
-                mMenuButtonResume->setOrigin(buttonOrigin);
-            }
-
-            mMenuButtonExit->show();
+            mMenuButtonResume->show();
             buttonOrigin.y -= ButtonHeight + 4;
-            mMenuButtonExit->setOrigin(buttonOrigin);
+            mMenuButtonResume->setOrigin(buttonOrigin);
         }
+
+        mMenuButtonExit->show();
+        buttonOrigin.y -= ButtonHeight + 4;
+        mMenuButtonExit->setOrigin(buttonOrigin);
     }
 
-    void CS2MainMenu::hide()
+    void CS2MainMenu::hideMenu()
     {
-        if (mMenuPanel && mMenuButtonNewGame && mMenuButtonResume && mMenuButtonExit)
-        {
-            mMenuPanel->hide();
-            mMenuButtonNewGame->hide();
-            mMenuButtonResume->hide();
-            mMenuButtonExit->hide();
-        }
+        assert(mDrawPanel);
+        assert(mMenuPanel);
+        assert(mMenuButtonNewGame);
+        assert(mMenuButtonResume);
+        assert(mMenuButtonExit);
+
+        mMenuPanel->hide();
+        mMenuButtonNewGame->hide();
+        mMenuButtonResume->hide();
+        mMenuButtonExit->hide();
     }
 }

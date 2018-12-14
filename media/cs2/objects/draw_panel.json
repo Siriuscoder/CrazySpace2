@@ -1,0 +1,27 @@
+{
+    "Root":
+    {
+        "Name": "draw_panel.root",
+        "Nodes": [
+            {
+                "Name": "draw_panel.node",
+                "Mesh": 
+                {
+                    "Name": "draw_panel.mesh",
+                    "MaterialMapping": 
+                    [
+                        {
+                            "MaterialIndex": 0,
+                            "Material":
+                            {
+                                "Name": "draw_panel.material",
+                                "Material": "cs2:materials/draw_panel.json"
+                            }
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+}
+

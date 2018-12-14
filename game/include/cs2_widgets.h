@@ -39,6 +39,8 @@ namespace CS2
         { return mName; }
         inline lite3dpp::SceneObject *getObject()
         { return mWidgetObject; }
+        inline const lite3dpp::SceneObject *getObject() const
+        { return mWidgetObject; }
         inline const kmVec3 &getOrigin() const
         { return mOrigin; }
         inline const kmVec2 &getSize() const
