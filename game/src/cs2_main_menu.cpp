@@ -28,36 +28,6 @@ namespace CS2
         mMainMenuScene(nullptr)
     {}
 
-    void CS2MainMenu::calculateMainMenuMetrics(kmVec2 &origin, kmVec2 &resolution)
-    {
-        assert(getEngine().window());
-        // Get real windows size
-        int rwidth = getEngine().window()->width();
-        int rheight = getEngine().window()->height();
-
-        if (rwidth > rheight)
-        {
-            resolution.x = rheight / CS2Game::WindowAspect;
-            resolution.y = rheight;
-        }
-        else
-        {
-            if (rwidth * CS2Game::WindowAspect > rheight)
-            {
-                resolution.x = rheight / CS2Game::WindowAspect;
-                resolution.y = rheight;
-            }
-            else
-            {
-                resolution.x = rwidth;
-                resolution.y = rwidth * CS2Game::WindowAspect;
-            }
-        }
-
-        origin.x = (rwidth - resolution.x) / 2.0f;
-        origin.y = 0.0f;
-    }
-
     void CS2MainMenu::animate(int32_t firedPerRound, uint64_t deltaMs)
     {
         // animate main menu here
@@ -79,7 +49,7 @@ namespace CS2
     void CS2MainMenu::createMenu()
     {
         kmVec2 resolution, origin, buttonSize;
-        calculateMainMenuMetrics(origin, resolution);
+        mGame.calculateMainMenuMetrics(origin, resolution);
 
         buttonSize.x = resolution.x * ButtonRelatedXSize;
         buttonSize.y = ButtonHeight;
@@ -115,13 +85,11 @@ namespace CS2
         mMenuButtonNewGame->setWidgetMouseClickHandler([this](CS2Widget *, const kmVec2 &)
         {
             mGame.newGame();
-            hideMenu();
         });
 
         mMenuButtonResume->setWidgetMouseClickHandler([this](CS2Widget *, const kmVec2 &)
         {
             mGame.resumeGame();
-            hideMenu();
         });
 
         mMenuButtonExit->setWidgetMouseClickHandler([this](CS2Widget *, const kmVec2 &)
@@ -133,7 +101,7 @@ namespace CS2
     void CS2MainMenu::setupCamera()
     {
         lite3dpp::Camera *menuCamera = getEngine().getCamera("main_menu_camera");
-        menuCamera->setupOrtho(-5, 20, 0, getEngine().window()->width(),
+        menuCamera->setupOrtho(0, 20, 0, getEngine().window()->width(),
             -getEngine().window()->height(), 0);
 
         kmVec3 cameraPos = { 0, 0, 20 };

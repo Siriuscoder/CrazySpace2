@@ -28,11 +28,10 @@ namespace CS2
     public:
 
         static const float WindowAspect;
+        static const kmVec2 gameDimensions;
         static const std::string assetPackageName();
         static const std::string assetObjectsPath();
         static const std::string assetMenuFont();
-
-        CS2Game();
 
         /* create engine objects */
         void init();
@@ -48,6 +47,8 @@ namespace CS2
         const lite3dpp::Main &getEngine() const 
         { return *mEngine; }
 
+
+        void calculateMainMenuMetrics(kmVec2 &origin, kmVec2 &resolution);
 
         /* Begin new game */
         void newGame();

@@ -19,10 +19,9 @@
 
 namespace CS2
 {
-    CS2Game::CS2Game()
-    {}
-
     const float CS2Game::WindowAspect = 2.0f;
+
+    const kmVec2 CS2Game::gameDimensions = { 50.0, 100.0 };
 
     const std::string CS2Game::assetPackageName()
     {
@@ -37,6 +36,36 @@ namespace CS2
     const std::string CS2Game::assetMenuFont()
     {
         return assetPackageName() + ":fonts/arial.ttf";
+    }
+
+    void CS2Game::calculateMainMenuMetrics(kmVec2 &origin, kmVec2 &resolution)
+    {
+        assert(getEngine().window());
+        // Get real windows size
+        int rwidth = getEngine().window()->width();
+        int rheight = getEngine().window()->height();
+
+        if (rwidth > rheight)
+        {
+            resolution.x = rheight / WindowAspect;
+            resolution.y = rheight;
+        }
+        else
+        {
+            if (rwidth * WindowAspect > rheight)
+            {
+                resolution.x = rheight / WindowAspect;
+                resolution.y = rheight;
+            }
+            else
+            {
+                resolution.x = rwidth;
+                resolution.y = rwidth * WindowAspect;
+            }
+        }
+
+        origin.x = (rwidth - resolution.x) / 2.0f;
+        origin.y = 0.0f;
     }
 
     void CS2Game::init()
@@ -116,12 +145,12 @@ namespace CS2
 
     void CS2Game::newGame()
     {
-
+        mMainMenu->hideMenu();
     }
 
     void CS2Game::resumeGame()
     {
-
+        mMainMenu->hideMenu();
     }
 
     void CS2Game::exitGame()

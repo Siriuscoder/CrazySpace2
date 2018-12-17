@@ -1,0 +1,19 @@
+{
+    "Cameras":
+    [
+        {
+            "Name": "game_camera",
+            "RenderTargets":
+            [
+                {
+                    "Name": "game_render.target",
+                    "Priority": 1,
+                    "TexturePass": 1,
+                    "DepthTest": false,
+                    "DepthOutput": false
+                }
+            ]
+        }
+    ]
+}
+

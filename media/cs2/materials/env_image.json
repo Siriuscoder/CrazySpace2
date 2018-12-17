@@ -1,0 +1,27 @@
+{
+    "Uniforms":
+    [
+        { "Name": "projectionMatrix" },
+        { "Name": "modelMatrix" },
+        { "Name": "viewMatrix" },
+        {
+            "Name": "diffuse",
+            "Type": "sampler",
+            "TextureName": "background1.texture",
+            "TexturePath":"cs2:textures/json/background1.json"
+        }
+    ],
+    
+    "Passes": 
+    [
+        {
+            "Pass": 1,
+            "Program": 
+            {
+                "Name": "textured_shape.program",
+                "Path": "cs2:shaders/json/textured_shape.json"
+            },
+            "Blending":false
+        }
+    ]
+}

@@ -33,6 +33,14 @@ namespace CS2
 
     private:
 
+        void loadEnvScene();
+        void loadStarsScene();
+        void loadRenderTarget(int samples);
+        void loadResolveRenderTarget();
+        void loadOutputTexture();
+        void setupCamera();
+
         CS2Game &mGame;
+        kmVec2 mResolution;
     };
 }

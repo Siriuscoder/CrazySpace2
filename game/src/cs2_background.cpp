@@ -28,10 +28,127 @@ namespace CS2
     void CS2Background::engineLoad()
     {
         // load background assets here
+        kmVec2 origin;
+        mGame.calculateMainMenuMetrics(origin, mResolution);
+
+        loadOutputTexture();
+        loadRenderTarget(1);
+        loadEnvScene();
+        loadStarsScene();
+        setupCamera();
     }
 
     void CS2Background::animate(int32_t firedPerRound, uint64_t deltaMs)
     {
         // animate background here
+    }
+
+    void CS2Background::loadEnvScene()
+    {
+        lite3dpp::ConfigurationWriter meshParams;
+        meshParams.set(L"Model", L"Plain")
+            .set(L"PlainSize", CS2Game::gameDimensions);
+
+        getEngine().getResourceManager()->queryResourceFromJson<lite3dpp::Mesh>("env_plane.mesh", meshParams.write());
+        getEngine().getResourceManager()->queryResource<lite3dpp::Scene>("env_scene",
+            "cs2:scenes/env.json");
+
+    }
+
+    void CS2Background::loadStarsScene()
+    {
+
+    }
+
+    void CS2Background::loadOutputTexture()
+    {
+        lite3dpp::ConfigurationWriter gameOutputParams;
+        gameOutputParams.set(L"TextureType", "2D")
+            .set(L"Filtering", "None")
+            .set(L"Wrapping", "ClampToEdge")
+            .set(L"Compression", false)
+            .set(L"TextureFormat", "RGBA")
+            .set(L"Width", mResolution.x)
+            .set(L"Height", mResolution.y);
+
+        getEngine().getResourceManager()->queryResourceFromJson<lite3dpp::TextureImage>("game_output.texture", 
+            gameOutputParams.write());
+    }
+
+    void CS2Background::loadRenderTarget(int samples)
+    {
+        lite3dpp::ConfigurationWriter rtParams;
+        lite3dpp::ConfigurationWriter caParams;
+        kmVec4 backcolor = { 0.0, 0.0, 0.0, 1.0 };
+
+        if (samples > 1)
+        {
+            caParams.set(L"Renderbuffer", true);
+        }
+        else
+        {
+            std::vector<lite3dpp::ConfigurationWriter> caArray;
+            lite3dpp::ConfigurationWriter caTextureParams;
+
+            caTextureParams.set(L"TextureName", "game_output.texture");
+            caArray.push_back(caTextureParams);
+            caParams.set(L"Attachments", caArray);
+        }
+
+        rtParams.set(L"Width", mResolution.x)
+            .set(L"Height", mResolution.y)
+            .set(L"BackgroundColor", backcolor)
+            .set(L"Priority", 1)
+            .set(L"CleanColorBuf", true)
+            .set(L"CleanDepthBuf", true)
+            .set(L"CleanStencilBuf", false)
+            .set(L"MSAA", samples)
+            .set(L"DepthAttachments", lite3dpp::ConfigurationWriter()
+                .set(L"Renderbuffer", true))
+            .set(L"ColorAttachments", caParams);
+
+        if (samples > 1)
+        {
+            loadResolveRenderTarget();
+
+            rtParams.set(L"BlitResultTo", lite3dpp::ConfigurationWriter()
+                .set(L"Name", "multisample_resolve.target"));
+        }
+
+        getEngine().getResourceManager()->queryResourceFromJson<lite3dpp::TextureRenderTarget>("game_render.target",
+            rtParams.write());
+    }
+
+    void CS2Background::loadResolveRenderTarget()
+    {
+        lite3dpp::ConfigurationWriter mrParams;
+        lite3dpp::ConfigurationWriter caTextureParams;
+        std::vector<lite3dpp::ConfigurationWriter> caArray;
+        lite3dpp::ConfigurationWriter caParams;
+
+        caTextureParams.set(L"TextureName", "game_output.texture");
+        caArray.push_back(caTextureParams);
+        caParams.set(L"Attachments", caArray);
+
+        mrParams.set(L"Width", mResolution.x)
+            .set(L"Height", mResolution.y)
+            .set(L"Priority", -1)
+            .set(L"CleanColorBuf", false)
+            .set(L"CleanDepthBuf", false)
+            .set(L"CleanStencilBuf", false)
+            .set(L"ColorAttachments", caParams);
+
+        getEngine().getResourceManager()->queryResourceFromJson<lite3dpp::TextureRenderTarget>("multisample_resolve.target", 
+            mrParams.write());
+    }
+
+    void CS2Background::setupCamera()
+    {
+        lite3dpp::Camera *gameCamera = getEngine().getCamera("game_camera");
+        gameCamera->setupOrtho(0, 50, 0, CS2Game::gameDimensions.x, -CS2Game::gameDimensions.y, 0);
+
+        kmVec3 cameraPos = { 0, 0, 50 };
+        gameCamera->setPosition(cameraPos);
+        gameCamera->lookAt(KM_VEC3_ZERO);
     }
 }

@@ -1,0 +1,27 @@
+{
+    "Root":
+    {
+        "Name": "env_image.root",
+        "Nodes": [
+            {
+                "Name": "env_image.node",
+                "Mesh": 
+                {
+                    "Name": "env_plane.mesh",
+                    "MaterialMapping": 
+                    [
+                        {
+                            "MaterialIndex": 0,
+                            "Material":
+                            {
+                                "Name": "env_image.material",
+                                "Material": "cs2:materials/env_image.json"
+                            }
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+}
+

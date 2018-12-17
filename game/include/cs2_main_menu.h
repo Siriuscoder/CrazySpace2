@@ -38,7 +38,6 @@ namespace CS2
 
         CS2MainMenu(CS2Game &game);
 
-        void calculateMainMenuMetrics(kmVec2 &origin, kmVec2 &resolution);
         void animate(int32_t firedPerRound, uint64_t deltaMs) override;
         void engineLoad() override;
         void engineStops() override;
