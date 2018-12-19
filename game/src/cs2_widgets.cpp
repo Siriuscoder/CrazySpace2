@@ -183,7 +183,7 @@ namespace CS2
         CS2Widget(name, scene, origin, size, parent),
         mMaterial(nullptr)
     {
-        mWidgetObject = scene.addObject(name, CS2Game::assetObjectsPath() + name + ".json", 
+        mWidgetObject = scene.addObject(name, CS2Game::assetObjectPath(name + ".json"),
             parent ? parent->getObject() : nullptr);
 
         mWidgetObject->getRoot()->setPosition(mOrigin);
@@ -233,7 +233,7 @@ namespace CS2
         mFontTexture = scene.getMain().getResourceManager()->queryResourceFromJson<lite3dpp::lite3dpp_font::FontTexture>(
             name + ".texture", fontTextureParams.write());
 
-        mWidgetObject = scene.addObject(name, CS2Game::assetObjectsPath() + name + ".json", 
+        mWidgetObject = scene.addObject(name, CS2Game::assetObjectPath(name + ".json"), 
             parent ? parent->getObject() : nullptr);
 
         mWidgetObject->getRoot()->setPosition(mOrigin);

@@ -39,7 +39,7 @@ namespace CS2
         getEngine().window()->setBackgroundColor(KM_VEC4_ZERO);
         // load main menu assets here
         mMainMenuScene = getEngine().getResourceManager()->queryResource<lite3dpp::Scene>("main_menu_scene",
-            "cs2:scenes/main_menu.json");
+            CS2Game::assetsScenePath("main_menu.json"));
 
         loadOutputTexture(); // Used by draw_panel
         setupCamera();

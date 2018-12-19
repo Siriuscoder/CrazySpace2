@@ -50,7 +50,7 @@ namespace CS2
 
         getEngine().getResourceManager()->queryResourceFromJson<lite3dpp::Mesh>("env_plane.mesh", meshParams.write());
         getEngine().getResourceManager()->queryResource<lite3dpp::Scene>("env_scene",
-            "cs2:scenes/env.json");
+            CS2Game::assetsScenePath("env.json"));
     }
 
     void CS2Background::loadStarsScene()

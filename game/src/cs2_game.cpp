@@ -28,9 +28,14 @@ namespace CS2
         return "cs2";
     }
 
-    const std::string CS2Game::assetObjectsPath()
+    const std::string CS2Game::assetObjectPath(const std::string &name)
     {
-        return assetPackageName() + ":objects/";
+        return assetPackageName() + ":objects/" + name;
+    }
+
+    const std::string CS2Game::assetsScenePath(const std::string &name)
+    {
+        return assetPackageName() + ":scenes/" + name;
     }
 
     const std::string CS2Game::assetMenuFont()
@@ -73,6 +78,7 @@ namespace CS2
         mEngine.reset(new lite3dpp::Main());
         mMainMenu.reset(new CS2MainMenu(*this));
         mBackground.reset(new CS2Background(*this));
+        mBackgroundStars.reset(new CS2BackgroundStars(*this));
     }
 
     void CS2Game::configure(const std::vector<std::string> &args)
@@ -138,6 +144,7 @@ namespace CS2
 
     void CS2Game::finish()
     {
+        mBackgroundStars.reset();
         mBackground.reset();
         mMainMenu.reset();
         mEngine.reset();

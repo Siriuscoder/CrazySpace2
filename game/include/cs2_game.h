@@ -20,6 +20,7 @@
 #include <cs2_common.h>
 #include <cs2_background.h>
 #include <cs2_main_menu.h>
+#include <cs2_stars.h>
 
 namespace CS2
 {
@@ -30,7 +31,8 @@ namespace CS2
         static const float WindowAspect;
         static const kmVec2 gameDimensions;
         static const std::string assetPackageName();
-        static const std::string assetObjectsPath();
+        static const std::string assetObjectPath(const std::string &name);
+        static const std::string assetsScenePath(const std::string &name);
         static const std::string assetMenuFont();
 
         /* create engine objects */
@@ -62,5 +64,6 @@ namespace CS2
         std::unique_ptr<lite3dpp::Main> mEngine;
         std::unique_ptr<CS2MainMenu> mMainMenu;
         std::unique_ptr<CS2Background> mBackground;
+        std::unique_ptr<CS2BackgroundStars> mBackgroundStars;
     };
 }

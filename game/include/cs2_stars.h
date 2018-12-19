@@ -19,51 +19,24 @@
 
 #include <cs2_common.h>
 #include <cs2_engine_listener.h>
-#include <cs2_widgets.h>
 
 namespace CS2
 {
-    class CS2MainMenu : public CS2EngineListener, public lite3dpp::Noncopiable
+    class CS2BackgroundStars : public CS2EngineListener, public lite3dpp::Noncopiable
     {
     public:
 
-        const float ButtonRelatedXSize = 0.8f;
-        const float ButtonHeight = 50;
-        const kmVec4 PanelColor = { 0.0, 0.0, 0.0, 0.4 };
-        const kmVec4 ButtonInActiveColor = { 0.8, 0.2, 0.2, 0.6 };
-        const kmVec4 ButtonActiveColor = { 0.2, 0.8, 0.2, 0.6 };
-        const kmVec4 TextColor = { 0.8, 0.8, 0.8, 1 };
-
-    public:
-
-        CS2MainMenu(CS2Game &game);
+        CS2BackgroundStars(CS2Game &game);
 
         void animate(int32_t firedPerRound, uint64_t deltaMs) override;
         void engineLoad() override;
-        void engineStops() override;
-
-        bool menuIsVisible() const;
-        void showMenu(bool resumeButton);
-        void hideMenu();
-
-    protected:
-        
-        void createMenu();
-        void setupCamera();
-        void loadOutputTexture();
-        void processEvent(SDL_Event *e) override;
 
     private:
 
-        CS2Game &mGame;
-        lite3dpp::Scene *mMainMenuScene;
-        kmVec2 mResolution;
-        kmVec2 mOrigin;
+        void loadStarsScene();
+        void recycleStars();
 
-        std::unique_ptr<CS2Panel> mDrawPanel;
-        std::unique_ptr<CS2Panel> mMenuPanel;
-        std::unique_ptr<CS2Button> mMenuButtonNewGame;
-        std::unique_ptr<CS2Button> mMenuButtonResume;
-        std::unique_ptr<CS2Button> mMenuButtonExit;
+        CS2Game &mGame;
+
     };
 }
