@@ -31,7 +31,6 @@ namespace CS2
         kmVec2 origin;
         mGame.calculateMainMenuMetrics(origin, mResolution);
 
-        loadOutputTexture();
         loadRenderTarget(1);
         loadEnvScene();
         loadStarsScene();
@@ -52,7 +51,6 @@ namespace CS2
         getEngine().getResourceManager()->queryResourceFromJson<lite3dpp::Mesh>("env_plane.mesh", meshParams.write());
         getEngine().getResourceManager()->queryResource<lite3dpp::Scene>("env_scene",
             "cs2:scenes/env.json");
-
     }
 
     void CS2Background::loadStarsScene()
@@ -60,26 +58,11 @@ namespace CS2
 
     }
 
-    void CS2Background::loadOutputTexture()
-    {
-        lite3dpp::ConfigurationWriter gameOutputParams;
-        gameOutputParams.set(L"TextureType", "2D")
-            .set(L"Filtering", "None")
-            .set(L"Wrapping", "ClampToEdge")
-            .set(L"Compression", false)
-            .set(L"TextureFormat", "RGBA")
-            .set(L"Width", mResolution.x)
-            .set(L"Height", mResolution.y);
-
-        getEngine().getResourceManager()->queryResourceFromJson<lite3dpp::TextureImage>("game_output.texture", 
-            gameOutputParams.write());
-    }
-
     void CS2Background::loadRenderTarget(int samples)
     {
         lite3dpp::ConfigurationWriter rtParams;
         lite3dpp::ConfigurationWriter caParams;
-        kmVec4 backcolor = { 0.0, 0.0, 0.0, 1.0 };
+        kmVec4 backcolor = { 0.6, 0.6, 0.3, 1.0 };
 
         if (samples > 1)
         {
@@ -145,9 +128,9 @@ namespace CS2
     void CS2Background::setupCamera()
     {
         lite3dpp::Camera *gameCamera = getEngine().getCamera("game_camera");
-        gameCamera->setupOrtho(0, 50, 0, CS2Game::gameDimensions.x, -CS2Game::gameDimensions.y, 0);
+        gameCamera->setupOrtho(0, 200, 0, CS2Game::gameDimensions.x, -CS2Game::gameDimensions.y, 0);
 
-        kmVec3 cameraPos = { 0, 0, 50 };
+        kmVec3 cameraPos = { 0, 0, 190 };
         gameCamera->setPosition(cameraPos);
         gameCamera->lookAt(KM_VEC3_ZERO);
     }

@@ -7,8 +7,7 @@
         {
             "Name": "diffuse",
             "Type": "sampler",
-            "TextureName": "box2.texture",
-            "TexturePath":"cs2:textures/json/box2.json"
+            "TextureName": "game_output.texture"
         }
     ],
     

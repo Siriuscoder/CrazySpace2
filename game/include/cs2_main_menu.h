@@ -50,12 +50,16 @@ namespace CS2
         
         void createMenu();
         void setupCamera();
+        void loadOutputTexture();
         void processEvent(SDL_Event *e) override;
 
     private:
 
         CS2Game &mGame;
         lite3dpp::Scene *mMainMenuScene;
+        kmVec2 mResolution;
+        kmVec2 mOrigin;
+
         std::unique_ptr<CS2Panel> mDrawPanel;
         std::unique_ptr<CS2Panel> mMenuPanel;
         std::unique_ptr<CS2Button> mMenuButtonNewGame;

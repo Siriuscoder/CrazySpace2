@@ -1,6 +1,6 @@
 {
   "Filtering":"Linear",
-  "Image":"cs2:textures/images/background1.jpg",
+  "Image":"cs2:textures/images/background1.png",
   "ImageFormat":"png",
   "TextureType":"2D",
   "Wrapping":"Repeat"

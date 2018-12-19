@@ -37,7 +37,6 @@ namespace CS2
         void loadStarsScene();
         void loadRenderTarget(int samples);
         void loadResolveRenderTarget();
-        void loadOutputTexture();
         void setupCamera();
 
         CS2Game &mGame;

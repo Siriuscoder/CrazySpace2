@@ -35,32 +35,48 @@ namespace CS2
 
     void CS2MainMenu::engineLoad()
     {
+        mGame.calculateMainMenuMetrics(mOrigin, mResolution);
         getEngine().window()->setBackgroundColor(KM_VEC4_ZERO);
         // load main menu assets here
         mMainMenuScene = getEngine().getResourceManager()->queryResource<lite3dpp::Scene>("main_menu_scene",
             "cs2:scenes/main_menu.json");
 
+        loadOutputTexture(); // Used by draw_panel
         setupCamera();
         createMenu();
         hideMenu();
         showMenu(true);
     }
 
+    void CS2MainMenu::loadOutputTexture()
+    {
+        lite3dpp::ConfigurationWriter gameOutputParams;
+        gameOutputParams.set(L"TextureType", "2D")
+            .set(L"Filtering", "None")
+            .set(L"Wrapping", "ClampToEdge")
+            .set(L"Compression", false)
+            .set(L"TextureFormat", "RGBA")
+            .set(L"Width", mResolution.x)
+            .set(L"Height", mResolution.y);
+
+        getEngine().getResourceManager()->queryResourceFromJson<lite3dpp::TextureImage>("game_output.texture",
+            gameOutputParams.write());
+    }
+
     void CS2MainMenu::createMenu()
     {
-        kmVec2 resolution, origin, buttonSize;
-        mGame.calculateMainMenuMetrics(origin, resolution);
+        kmVec2 buttonSize = {
+            mResolution.x * ButtonRelatedXSize,
+            ButtonHeight
+        };
 
-        buttonSize.x = resolution.x * ButtonRelatedXSize;
-        buttonSize.y = ButtonHeight;
-
-        mDrawPanel.reset(new CS2Panel("draw_panel", *mMainMenuScene, origin, resolution, PanelColor));
-        mMenuPanel.reset(new CS2Panel("menu_panel", *mMainMenuScene, origin, resolution, PanelColor, mDrawPanel.get()));
-        mMenuButtonNewGame.reset(new CS2Button("menu_button_new_game", *mMainMenuScene, origin, buttonSize, "NEW GAME",
+        mDrawPanel.reset(new CS2Panel("draw_panel", *mMainMenuScene, mOrigin, mResolution, PanelColor));
+        mMenuPanel.reset(new CS2Panel("menu_panel", *mMainMenuScene, mOrigin, mResolution, PanelColor, mDrawPanel.get()));
+        mMenuButtonNewGame.reset(new CS2Button("menu_button_new_game", *mMainMenuScene, mOrigin, buttonSize, "NEW GAME",
             CS2Game::assetMenuFont(), ButtonInActiveColor, TextColor, 16, mMenuPanel.get()));
-        mMenuButtonResume.reset(new CS2Button("menu_button_resume", *mMainMenuScene, origin, buttonSize, "RESUME",
+        mMenuButtonResume.reset(new CS2Button("menu_button_resume", *mMainMenuScene, mOrigin, buttonSize, "RESUME",
             CS2Game::assetMenuFont(), ButtonInActiveColor, TextColor, 14, mMenuPanel.get()));
-        mMenuButtonExit.reset(new CS2Button("menu_button_exit", *mMainMenuScene, origin, buttonSize, "EXIT",
+        mMenuButtonExit.reset(new CS2Button("menu_button_exit", *mMainMenuScene, mOrigin, buttonSize, "EXIT",
             CS2Game::assetMenuFont(), ButtonInActiveColor, TextColor, 14, mMenuPanel.get()));
 
         auto onMouseEnter = [this](CS2Widget *w, const kmVec2 &pos)
@@ -101,10 +117,10 @@ namespace CS2
     void CS2MainMenu::setupCamera()
     {
         lite3dpp::Camera *menuCamera = getEngine().getCamera("main_menu_camera");
-        menuCamera->setupOrtho(0, 20, 0, getEngine().window()->width(),
+        menuCamera->setupOrtho(0, 100, 0, getEngine().window()->width(),
             -getEngine().window()->height(), 0);
 
-        kmVec3 cameraPos = { 0, 0, 20 };
+        kmVec3 cameraPos = { 0, 0, 90 };
         menuCamera->setPosition(cameraPos);
         menuCamera->lookAt(KM_VEC3_ZERO);
     }
