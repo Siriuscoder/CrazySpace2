@@ -15,6 +15,9 @@
 *	You should have received a copy of the GNU General Public License
 *	along with CrazySpace2.  If not, see <http://www.gnu.org/licenses/>.
 *******************************************************************************/
+#include <cstdlib>
+#include <ctime>
+
 #include <cs2_game.h>
 #include <cs2_stars.h>
 
@@ -22,14 +25,15 @@ namespace CS2
 {
     CS2BackgroundStars::CS2BackgroundStars(CS2Game &game) :
         CS2EngineListener(game.getEngine()),
-        mGame(game)
+        mGame(game),
+        mStarsMesh(nullptr)
     {}
 
     void CS2BackgroundStars::engineLoad()
     {
         // load background assets here
+        createStarsMesh();
         loadStarsScene();
-        recycleStars();
     }
 
     void CS2BackgroundStars::animate(int32_t firedPerRound, uint64_t deltaMs)
@@ -43,8 +47,26 @@ namespace CS2
             CS2Game::assetsScenePath("stars.json"));
     }
 
-    void CS2BackgroundStars::recycleStars()
+    void CS2BackgroundStars::createStarsMesh()
     {
+        // use current time as seed for random generator
+        std::srand(std::time(nullptr));
+        // create empty mesh first
+        mStarsMesh = getEngine().getResourceManager()->queryResourceFromJson<lite3dpp::Mesh>("stars.mesh", LITE3D_EMPTY_JSON);
 
+        std::vector<kmVec3> starsPoints;
+        kmVec3 bbNull = {0, 0, 0};
+        for (int i = 0; i < (starsCount / 3); ++i)
+        {
+            kmVec3 starsTri = {
+                static_cast<float>(std::rand() % static_cast<int>(CS2Game::gameDimensions.x)),
+                -static_cast<float>(std::rand() % static_cast<int>(CS2Game::gameDimensions.y)),
+                0
+            };
+
+            starsPoints.push_back(starsTri);
+        }
+
+        mStarsMesh->genArray(starsPoints, bbNull, bbNull, true);
     }
 }

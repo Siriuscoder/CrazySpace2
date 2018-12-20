@@ -26,6 +26,8 @@ namespace CS2
     {
     public:
 
+        const int starsCount = 60;
+
         CS2BackgroundStars(CS2Game &game);
 
         void animate(int32_t firedPerRound, uint64_t deltaMs) override;
@@ -34,9 +36,9 @@ namespace CS2
     private:
 
         void loadStarsScene();
-        void recycleStars();
+        void createStarsMesh();
 
         CS2Game &mGame;
-
+        lite3dpp::Mesh *mStarsMesh;
     };
 }
