@@ -1,0 +1,26 @@
+{
+    "Uniforms":
+    [
+        { "Name": "projectionMatrix" },
+        { "Name": "modelMatrix" },
+        { "Name": "viewMatrix" },
+        {
+            "Name":"color",
+            "Type":"v4",
+            "Value":[1, 1, 1, 1]
+        }
+    ],
+    
+    "Passes": 
+    [
+        {
+            "Pass": 1,
+            "Program": 
+            {
+                "Name": "points_particles.program",
+                "Path": "cs2:shaders/json/points_particles.json"
+            },
+            "Blending": false
+        }
+    ]
+}

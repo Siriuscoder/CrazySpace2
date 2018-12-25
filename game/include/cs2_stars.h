@@ -22,6 +22,35 @@
 
 namespace CS2
 {
+    class CS2Star
+    {
+    public:
+
+        const float maxSpeed = 0.7f;
+
+        CS2Star(bool isnew);
+
+        bool isNotVisible();
+
+        inline kmVec3 getPos()
+        {
+            kmVec3 res = {
+                mPos.x,
+                mPos.y,
+                0.0f
+            };
+
+            return res;
+        }
+
+        void animate();
+
+    private:
+
+        kmVec2 mPos;
+        float mSpeed;
+    };
+
     class CS2BackgroundStars : public CS2EngineListener, public lite3dpp::Noncopiable
     {
     public:
@@ -36,9 +65,11 @@ namespace CS2
     private:
 
         void loadStarsScene();
-        void createStarsMesh();
+        void createStars();
+        void syncStars();
 
         CS2Game &mGame;
         lite3dpp::Mesh *mStarsMesh;
+        std::list<std::shared_ptr<CS2Star>> mStars;
     };
 }

@@ -1,0 +1,22 @@
+{
+    "Root":
+    {
+        "Name": "stars.node",
+        "Mesh": 
+        {
+            "Name": "stars_particles.mesh",
+            "MaterialMapping": 
+            [
+                {
+                    "MaterialIndex": 0,
+                    "Material":
+                    {
+                        "Name": "stars_particles.material",
+                        "Material": "cs2:materials/stars_particles.json"
+                    }
+                }
+            ]
+        }
+    }
+}
+

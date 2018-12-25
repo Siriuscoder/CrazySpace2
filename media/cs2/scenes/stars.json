@@ -14,6 +14,14 @@
                 }
             ]
         }
+    ],
+    
+    "Objects":
+    [
+        {
+            "Name": "Stars",
+            "Object": "cs2:objects/stars.json"
+        }
     ]
 }
 

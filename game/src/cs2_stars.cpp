@@ -16,13 +16,30 @@
 *	along with CrazySpace2.  If not, see <http://www.gnu.org/licenses/>.
 *******************************************************************************/
 #include <cstdlib>
-#include <ctime>
 
 #include <cs2_game.h>
 #include <cs2_stars.h>
 
 namespace CS2
 {
+    CS2Star::CS2Star(bool isnew)
+    {
+        mPos.x = static_cast<float>(std::rand() % static_cast<int>(CS2Game::gameDimensions.x));
+        mPos.y = isnew ? -CS2Game::gameDimensions.y : -static_cast<float>(
+            std::rand() % static_cast<int>(CS2Game::gameDimensions.y));
+        mSpeed = (std::rand() % static_cast<int>(maxSpeed * 1000)) / 1000.0f;
+    }
+
+    bool CS2Star::isNotVisible()
+    {
+        return mPos.y > 0;
+    }
+
+    void CS2Star::animate()
+    {
+        mPos.y += mSpeed;
+    }
+
     CS2BackgroundStars::CS2BackgroundStars(CS2Game &game) :
         CS2EngineListener(game.getEngine()),
         mGame(game),
@@ -32,13 +49,26 @@ namespace CS2
     void CS2BackgroundStars::engineLoad()
     {
         // load background assets here
-        createStarsMesh();
+        createStars();
         loadStarsScene();
     }
 
     void CS2BackgroundStars::animate(int32_t firedPerRound, uint64_t deltaMs)
     {
+        assert(mStarsMesh);
+
         // animate background here
+        for (auto &star : mStars)
+        {
+            star->animate();
+            // recycle stars
+            if (star->isNotVisible())
+            {
+                star = std::make_shared<CS2Star>(true);
+            }
+        }
+
+        syncStars();
     }
 
     void CS2BackgroundStars::loadStarsScene()
@@ -47,26 +77,34 @@ namespace CS2
             CS2Game::assetsScenePath("stars.json"));
     }
 
-    void CS2BackgroundStars::createStarsMesh()
+    void CS2BackgroundStars::createStars()
     {
-        // use current time as seed for random generator
-        std::srand(std::time(nullptr));
+        assert((starsCount % 3) == 0);
         // create empty mesh first
-        mStarsMesh = getEngine().getResourceManager()->queryResourceFromJson<lite3dpp::Mesh>("stars.mesh", LITE3D_EMPTY_JSON);
+        mStarsMesh = getEngine().getResourceManager()->queryResourceFromJson<lite3dpp::Mesh>(
+            "stars_particles.mesh", LITE3D_EMPTY_JSON);
 
-        std::vector<kmVec3> starsPoints;
-        kmVec3 bbNull = {0, 0, 0};
-        for (int i = 0; i < (starsCount / 3); ++i)
+        std::vector<kmVec3> initialPoints;
+        for (int i = 0; i < starsCount; ++i)
         {
-            kmVec3 starsTri = {
-                static_cast<float>(std::rand() % static_cast<int>(CS2Game::gameDimensions.x)),
-                -static_cast<float>(std::rand() % static_cast<int>(CS2Game::gameDimensions.y)),
-                0
-            };
-
-            starsPoints.push_back(starsTri);
+            mStars.emplace_back(std::make_shared<CS2Star>(false));
+            initialPoints.push_back(mStars.back()->getPos());
         }
 
-        mStarsMesh->genArray(starsPoints, bbNull, bbNull, true);
+        kmVec3 bbNull = {0, 0, 0};
+        mStarsMesh->genArray(initialPoints, bbNull, bbNull, true);
+    }
+
+    void CS2BackgroundStars::syncStars()
+    {
+        assert(mStarsMesh);
+        
+        int i = 0;
+        auto mapped = mStarsMesh->vertexBuffer().map(lite3dpp::BufferScopedMapper::LockTypeWrite);
+
+        for (auto &star : mStars)
+        {
+            mapped.getPtr<kmVec3>()[i++] = star->getPos();
+        }
     }
 }

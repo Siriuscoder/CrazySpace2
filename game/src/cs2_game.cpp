@@ -15,6 +15,9 @@
 *	You should have received a copy of the GNU General Public License
 *	along with CrazySpace2.  If not, see <http://www.gnu.org/licenses/>.
 *******************************************************************************/
+#include <cstdlib>
+#include <ctime>
+
 #include <cs2_game.h>
 
 namespace CS2
@@ -75,6 +78,9 @@ namespace CS2
 
     void CS2Game::init()
     {
+        // use current time as seed for random generator
+        std::srand(std::time(nullptr));
+
         mEngine.reset(new lite3dpp::Main());
         mMainMenu.reset(new CS2MainMenu(*this));
         mBackground.reset(new CS2Background(*this));
