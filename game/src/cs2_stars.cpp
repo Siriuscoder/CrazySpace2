@@ -19,15 +19,17 @@
 
 #include <cs2_game.h>
 #include <cs2_stars.h>
+#include <cs2_utils.h>
 
 namespace CS2
 {
     CS2Star::CS2Star(bool isnew)
     {
-        mPos.x = static_cast<float>(std::rand() % static_cast<int>(CS2Game::gameDimensions.x));
-        mPos.y = isnew ? -CS2Game::gameDimensions.y : -static_cast<float>(
-            std::rand() % static_cast<int>(CS2Game::gameDimensions.y));
-        mSpeed = (std::rand() % static_cast<int>(maxSpeed * 1000)) / 1000.0f;
+        mPos.x = CS2Math::random(CS2Game::gameDimensions.x);
+        mPos.y = isnew ? -CS2Game::gameDimensions.y : -CS2Math::random(CS2Game::gameDimensions.y);
+        mPos.z = 0;
+
+        mSpeed = CS2Math::random_range(minSpeed, maxSpeed);
     }
 
     bool CS2Star::isNotVisible()

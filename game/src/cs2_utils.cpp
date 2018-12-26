@@ -15,54 +15,33 @@
 *	You should have received a copy of the GNU General Public License
 *	along with CrazySpace2.  If not, see <http://www.gnu.org/licenses/>.
 *******************************************************************************/
-#pragma once 
+#include <cstdlib>
+#include <ctime>
+#include <cmath>
 
-#include <cs2_common.h>
-#include <cs2_engine_listener.h>
+#include <cs2_utils.h>
 
 namespace CS2
 {
-    class CS2Star
+    float CS2Math::random(float a)
     {
-    public:
+        return random_range(0.0f, a);
+    }
 
-        const float maxSpeed = 0.9f;
-        const float minSpeed = 0.2f;
-
-        CS2Star(bool isnew);
-
-        bool isNotVisible();
-
-        inline const kmVec3 &getPos() const
-        { return mPos; }
-
-        void animate();
-
-    private:
-
-        kmVec3 mPos;
-        float mSpeed;
-    };
-
-    class CS2BackgroundStars : public CS2EngineListener, public lite3dpp::Noncopiable
+    int CS2Math::random(int a)
     {
-    public:
+        return random_range(0, a);
+    }
 
-        const int starsCount = 60;
+    float CS2Math::random_range(float min, float max)
+    {
+        float scale = rand() / static_cast<float>(RAND_MAX);    /* [0, 1.0] */
+        return min + scale * (max - min);                       /* [min, max] */
+    }
 
-        CS2BackgroundStars(CS2Game &game);
-
-        void animate(int32_t firedPerRound, uint64_t deltaMs) override;
-        void engineLoad() override;
-
-    private:
-
-        void loadStarsScene();
-        void createStars();
-        void syncStars();
-
-        CS2Game &mGame;
-        lite3dpp::Mesh *mStarsMesh;
-        std::list<std::shared_ptr<CS2Star>> mStars;
-    };
+    int CS2Math::random_range(int min, int max)
+    {
+        /* https://stackoverflow.com/questions/1202687/how-do-i-get-a-specific-range-of-numbers-from-rand */
+        return min + rand() / (RAND_MAX / (max - min + 1) + 1);
+    }
 }

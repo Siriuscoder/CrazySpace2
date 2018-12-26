@@ -18,51 +18,16 @@
 #pragma once 
 
 #include <cs2_common.h>
-#include <cs2_engine_listener.h>
 
 namespace CS2
 {
-    class CS2Star
+    class CS2Math
     {
     public:
 
-        const float maxSpeed = 0.9f;
-        const float minSpeed = 0.2f;
-
-        CS2Star(bool isnew);
-
-        bool isNotVisible();
-
-        inline const kmVec3 &getPos() const
-        { return mPos; }
-
-        void animate();
-
-    private:
-
-        kmVec3 mPos;
-        float mSpeed;
-    };
-
-    class CS2BackgroundStars : public CS2EngineListener, public lite3dpp::Noncopiable
-    {
-    public:
-
-        const int starsCount = 60;
-
-        CS2BackgroundStars(CS2Game &game);
-
-        void animate(int32_t firedPerRound, uint64_t deltaMs) override;
-        void engineLoad() override;
-
-    private:
-
-        void loadStarsScene();
-        void createStars();
-        void syncStars();
-
-        CS2Game &mGame;
-        lite3dpp::Mesh *mStarsMesh;
-        std::list<std::shared_ptr<CS2Star>> mStars;
+        static float random(float a);
+        static int random(int a);
+        static float random_range(float min, float max);
+        static int random_range(int min, int max);
     };
 }
