@@ -23,10 +23,15 @@
 
 namespace CS2
 {
-    CS2Star::CS2Star(bool isnew)
+    CS2Star::CS2Star()
+    {
+        recycle(false);
+    }
+
+    void CS2Star::recycle(bool ontop)
     {
         mPos.x = CS2Math::random(CS2Game::gameDimensions.x);
-        mPos.y = isnew ? -CS2Game::gameDimensions.y : -CS2Math::random(CS2Game::gameDimensions.y);
+        mPos.y = ontop ? -CS2Game::gameDimensions.y : -CS2Math::random(CS2Game::gameDimensions.y);
         mPos.z = 0;
 
         mSpeed = CS2Math::random_range(minSpeed, maxSpeed);
@@ -62,11 +67,11 @@ namespace CS2
         // animate background here
         for (auto &star : mStars)
         {
-            star->animate();
+            star.animate();
             // recycle stars
-            if (star->isNotVisible())
+            if (star.isNotVisible())
             {
-                star = std::make_shared<CS2Star>(true);
+                star.recycle(true);
             }
         }
 
@@ -89,8 +94,8 @@ namespace CS2
         std::vector<kmVec3> initialPoints;
         for (int i = 0; i < starsCount; ++i)
         {
-            mStars.emplace_back(std::make_shared<CS2Star>(false));
-            initialPoints.push_back(mStars.back()->getPos());
+            mStars.emplace_back();
+            initialPoints.push_back(mStars.back().getPos());
         }
 
         kmVec3 bbNull = {0, 0, 0};
@@ -106,7 +111,7 @@ namespace CS2
 
         for (auto &star : mStars)
         {
-            mapped.getPtr<kmVec3>()[i++] = star->getPos();
+            mapped.getPtr<kmVec3>()[i++] = star.getPos();
         }
     }
 }

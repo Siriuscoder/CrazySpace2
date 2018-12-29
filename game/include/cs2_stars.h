@@ -29,7 +29,7 @@ namespace CS2
         const float maxSpeed = 0.9f;
         const float minSpeed = 0.2f;
 
-        CS2Star(bool isnew);
+        CS2Star();
 
         bool isNotVisible();
 
@@ -37,6 +37,7 @@ namespace CS2
         { return mPos; }
 
         void animate();
+        void recycle(bool ontop);
 
     private:
 
@@ -63,6 +64,6 @@ namespace CS2
 
         CS2Game &mGame;
         lite3dpp::Mesh *mStarsMesh;
-        std::list<std::shared_ptr<CS2Star>> mStars;
+        std::vector<CS2Star> mStars;
     };
 }
