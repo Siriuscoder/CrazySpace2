@@ -3,12 +3,7 @@
     [
         { "Name": "projectionMatrix" },
         { "Name": "modelMatrix" },
-        { "Name": "viewMatrix" },
-        {
-            "Name":"color",
-            "Type":"v4",
-            "Value":[1, 1, 1, 1]
-        }
+        { "Name": "viewMatrix" }
     ],
     
     "Passes": 

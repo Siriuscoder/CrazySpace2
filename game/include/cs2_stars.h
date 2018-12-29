@@ -33,15 +33,15 @@ namespace CS2
 
         bool isNotVisible();
 
-        inline const kmVec3 &getPos() const
-        { return mPos; }
+        inline const kmVec3 &getData() const
+        { return mData; }
 
         void animate();
         void recycle(bool ontop);
 
     private:
 
-        kmVec3 mPos;
+        kmVec3 mData;
         float mSpeed;
     };
 
@@ -49,7 +49,7 @@ namespace CS2
     {
     public:
 
-        const int starsCount = 60;
+        const int starsCount = 90;
 
         CS2BackgroundStars(CS2Game &game);
 

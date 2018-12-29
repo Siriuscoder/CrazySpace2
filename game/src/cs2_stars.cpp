@@ -30,21 +30,21 @@ namespace CS2
 
     void CS2Star::recycle(bool ontop)
     {
-        mPos.x = CS2Math::random(CS2Game::gameDimensions.x);
-        mPos.y = ontop ? -CS2Game::gameDimensions.y : -CS2Math::random(CS2Game::gameDimensions.y);
-        mPos.z = 0;
+        mData.x = CS2Math::random(CS2Game::gameDimensions.x); // x coord
+        mData.y = ontop ? -CS2Game::gameDimensions.y : -CS2Math::random(CS2Game::gameDimensions.y); // y coord
+        mData.z = CS2Math::random_range(0.1f, 1.0f); // color intensity
 
         mSpeed = CS2Math::random_range(minSpeed, maxSpeed);
     }
 
     bool CS2Star::isNotVisible()
     {
-        return mPos.y > 0;
+        return mData.y > 0;
     }
 
     void CS2Star::animate()
     {
-        mPos.y += mSpeed;
+        mData.y += mSpeed;
     }
 
     CS2BackgroundStars::CS2BackgroundStars(CS2Game &game) :
@@ -95,7 +95,7 @@ namespace CS2
         for (int i = 0; i < starsCount; ++i)
         {
             mStars.emplace_back();
-            initialPoints.push_back(mStars.back().getPos());
+            initialPoints.push_back(mStars.back().getData());
         }
 
         kmVec3 bbNull = {0, 0, 0};
@@ -105,13 +105,14 @@ namespace CS2
     void CS2BackgroundStars::syncStars()
     {
         assert(mStarsMesh);
+        assert(mStarsMesh->vertexBuffer().bufferSizeBytes() == (sizeof(kmVec3) * mStars.size()));
         
         int i = 0;
         auto mapped = mStarsMesh->vertexBuffer().map(lite3dpp::BufferScopedMapper::LockTypeWrite);
 
         for (auto &star : mStars)
         {
-            mapped.getPtr<kmVec3>()[i++] = star.getPos();
+            mapped.getPtr<kmVec3>()[i++] = star.getData();
         }
     }
 }

@@ -1,8 +1,8 @@
 {
     "Sources": 
     [
-        "cs2:shaders/sources/solid_shape.vs",
-        "cs2:shaders/sources/tri_to_points.gs",
-        "cs2:shaders/sources/solid_shape.ps"
+        "cs2:shaders/sources/points_particles.vs",
+        "cs2:shaders/sources/points_particles.gs",
+        "cs2:shaders/sources/points_particles.ps"
     ]
 }
