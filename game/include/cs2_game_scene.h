@@ -17,36 +17,9 @@
 *******************************************************************************/
 #pragma once 
 
-#include <lite3dpp/lite3dpp_main.h>
 #include <cs2_common.h>
 
 namespace CS2
 {
-    class CS2EngineListener : protected lite3dpp::LifecycleObserver
-    {
-    public:
 
-        CS2EngineListener(lite3dpp::Main &engine);
-        ~CS2EngineListener();
-        
-        virtual void engineLoad();
-        virtual void engineStops();
-        virtual void animate(int32_t firedPerRound, uint64_t deltaMs);
-        virtual void regularTimerTick(lite3d_timer *timerid);
-
-        lite3dpp::Main &getEngine()
-        { return mEngine; }
-        const lite3dpp::Main &getEngine() const
-        { return mEngine; }
-
-    protected:
-
-        void init() override final;
-        void shut() override final;
-        void timerTick(lite3d_timer *timerid) override final;
-
-    private:
-
-        lite3dpp::Main &mEngine;
-    };
 }
