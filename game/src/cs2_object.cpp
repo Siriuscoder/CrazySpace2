@@ -66,4 +66,10 @@ namespace CS2
     {
         return false;
     }
+
+    /* play animation */
+    void CS2GameObject::animate()
+    {
+        /* play animation in descendants */
+    }
 }

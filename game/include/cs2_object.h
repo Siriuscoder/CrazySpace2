@@ -52,6 +52,8 @@ namespace CS2
         void updateBBox();
         /* check object near other object */
         virtual bool checkCollision(const CS2GameObject &obj);
+        /* play animation */
+        virtual void animate();
 
     protected:
 
