@@ -1,7 +1,7 @@
 version: '0.1.{build}'
 
 image: 
-  - Visual Studio 2015
+  - Visual Studio 2022
   - Ubuntu
   
 configuration:
@@ -23,7 +23,7 @@ before_build:
   - sh: cd /home/appveyor/builds/cs2_linux
   - sh: cmake -DCMAKE_BUILD_TYPE=Release /home/appveyor/projects/crazyspace2
   - cmd: cd C:\builds\cs2_win
-  - cmd: cmake -G "Visual Studio 14 2015 Win64" C:\projects\crazyspace2
+  - cmd: cmake -DCMAKE_BUILD_TYPE=Release C:\projects\crazyspace2
 
 build:
   project: C:\builds\cs2_win\CrazySpace2.sln
