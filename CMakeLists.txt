@@ -15,7 +15,7 @@
 #	You should have received a copy of the GNU General Public License
 #	along with CrazySpace2.  If not, see <http://www.gnu.org/licenses/>.
 
-cmake_minimum_required(VERSION 2.8.9)
+cmake_minimum_required(VERSION 3.12.0)
 project(CrazySpace2)
 
 set(BUILD_ENGINE_ONLY ON CACHE BOOL "Do not build samples, tests and other staff" FORCE)

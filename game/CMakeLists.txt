@@ -15,7 +15,6 @@
 #	You should have received a copy of the GNU General Public License
 #	along with CrazySpace2.  If not, see <http://www.gnu.org/licenses/>.
 
-cmake_minimum_required(VERSION 2.8.9)
 project(cs2)
 
 unset(SOURCES_LIST)
